@@ -1,0 +1,61 @@
+MODULE SYSTEM;  (*pseudo module declaring all the SYSTEM procedures *)
+
+  TYPE
+    (* pseudo types used by the builtin procedures *)
+    AnyType = RECORD (* any type *) END;
+    TypeType = RECORD (* A type goes here, not a variable *) END;
+
+  (* pseudo arrays representing the memory and the registers *)
+  VAR mem, registers, specialregisters: ARRAY 0 OF INTEGER;
+
+  PROCEDURE ADR*(VAR v: AnyType): INTEGER;
+  BEGIN RETURN (* address of *) v
+  END ADR;
+
+  PROCEDURE SIZE*(VAR T: TypeType): INTEGER;
+  BEGIN RETURN (* size of *) T
+  END SIZE;
+
+  PROCEDURE BIT*(a, n: INTEGER): BOOLEAN;
+  BEGIN RETURN mem[a] = n (* th bit set*)
+  END BIT;
+
+  PROCEDURE GET*(a: INTEGER; VAR v: AnyType);
+  BEGIN v := mem[a]
+  END GET;
+
+  PROCEDURE PUT*(a: INTEGER; x: AnyType);
+  BEGIN mem[a] := x
+  END PUT;
+
+  PROCEDURE COPY*(src, dst, n: INTEGER);
+  VAR i: INTEGER;
+  BEGIN
+    FOR i:= 0 TO n - 1 DO mem[dst + i] := mem[src + i] END
+  END COPY;
+
+  PROCEDURE VAL*(T: TypeType; n: AnyType): TypeType;
+  BEGIN RETURN n (* identity converted to T *)
+  END VAL;
+
+  (* LDPSR, LDREG, REG, H, COND are not in language definition,
+     but SYSTEM.COND is not used by Project Oberon *)
+
+  PROCEDURE LDREG* (reg, value: INTEGER);
+  BEGIN registers[reg] := value
+  END LDREG;
+
+  PROCEDURE LDPSR* (value: INTEGER);
+  BEGIN (* enable / disable interrupts *)
+  END LDPSR;
+
+  PROCEDURE REG*(reg: INTEGER): INTEGER;
+  BEGIN RETURN registers[reg]
+  END REG;
+
+  (* H(0) = remainder of last division; H(1) = processor cpuid *)
+  PROCEDURE H*(reg: INTEGER): INTEGER;
+  BEGIN RETURN specialregisters[reg]
+  END H;
+
+END SYSTEM.

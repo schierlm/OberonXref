@@ -1,0 +1,61 @@
+--- ORG.Mod.txt
++++ ORG.Mod.txt
+@@ -47,6 +47,7 @@
+     
+     relmap: ARRAY 6 OF INTEGER;  (*condition codes for relations*)
+     code: ARRAY maxCode OF LONGINT;
++    codepos: ARRAY maxCode OF LONGINT;
+     data: ARRAY maxTD OF LONGINT;  (*type descriptors*)
+     str: ARRAY maxStrx OF CHAR;
+ 
+@@ -54,12 +55,14 @@
+ 
+   PROCEDURE Put0(op, a, b, c: LONGINT);
+   BEGIN (*emit format-0 instruction*)
++    codepos[pc] := ORS.Pos();
+     code[pc] := ((a*10H + b) * 10H + op) * 10000H + c; INC(pc)
+   END Put0;
+ 
+   PROCEDURE Put1(op, a, b, im: LONGINT);
+   BEGIN (*emit format-1 instruction,  -10000H <= im < 10000H*)
+     IF im < 0 THEN INC(op, V) END ;
++    codepos[pc] := ORS.Pos();
+     code[pc] := (((a+40H) * 10H + b) * 10H + op) * 10000H + (im MOD 10000H); INC(pc)
+   END Put1;
+ 
+@@ -74,11 +77,13 @@
+ 
+   PROCEDURE Put2(op, a, b, off: LONGINT);
+   BEGIN (*emit load/store instruction*)
++    codepos[pc] := ORS.Pos();
+     code[pc] := ((op * 10H + a) * 10H + b) * 100000H + (off MOD 100000H); INC(pc)
+   END Put2;
+ 
+   PROCEDURE Put3(op, cond, off: LONGINT);
+   BEGIN (*emit branch instruction*)
++    codepos[pc] := ORS.Pos();
+     code[pc] := ((op+12) * 10H + cond) * 1000000H + (off MOD 1000000H); INC(pc)
+   END Put3;
+ 
+@@ -999,7 +1004,7 @@
+   PROCEDURE Open*(v: INTEGER);
+   BEGIN pc := 0; tdx := 0; strx := 0; RH := 0; fixorgP := 0; fixorgD := 0; fixorgT := 0; check := v # 0; version := v;
+     IF v = 0 THEN pc := 1;
+-      REPEAT code[pc] := 0; INC(pc) UNTIL pc = 8
++      REPEAT code[pc] := 0; codepos[pc] := ORS.Pos(); INC(pc) UNTIL pc = 8
+     END
+   END Open;
+ 
+@@ -1110,7 +1115,11 @@
+     END ;
+     Files.WriteInt(R, -1);
+     Files.WriteInt(R, fixorgP); Files.WriteInt(R, fixorgD); Files.WriteInt(R, fixorgT); Files.WriteInt(R, entry);
+-    Files.Write(R, "O"); Files.Register(F)
++    Files.Write(R, "O");
++    Files.Write(R, "M");
++    FOR i := 0 TO pc-1 DO Files.WriteInt(R, codepos[i]) END ;
++    Files.Write(R, "X");
++    Files.Register(F)
+   END Close;
+ 
+ BEGIN

@@ -1,0 +1,100 @@
+MODULE BUILTINS;  (*pseudo module declaring all the builtin types and procedures *)
+
+  TYPE
+    BOOLEAN* = RECORD (* the truth values TRUE and FALSE *) END;
+    CHAR* = RECORD (* the characters of a standard character set *) END;
+    INTEGER* = RECORD (* the integers *) END;
+    REAL* = RECORD (* real numbers *) END;
+    BYTE* = RECORD (* the integers between 0 and 255 *) END;
+    SET* = RECORD (* the sets of integers between 0 and an implementation-dependent limit *) END;
+
+    (* LONGINT is synonym to INTEGER, LONGREAL to REAL *)
+    LONGINT* = RECORD (* INTEGER *) END;
+    LONGREAL* = RECORD (* REAL *) END;
+
+    (* pseudo types used by the builtin procedures *)
+    NumericType = RECORD (* any numeric type *) END;
+    ArrayType = ARRAY 1 OF NumericType;
+    CharBooleanSet = RECORD (* one of CHAR, BOOLEAN, SET *) END;
+    PointerType = RECORD (* pointer type *) END;
+
+  PROCEDURE ABS*(x: NumericType): NumericType;
+  BEGIN RETURN (* absolute value of *) x
+  END ABS;
+
+  PROCEDURE ODD*(x: INTEGER): BOOLEAN;
+  BEGIN RETURN x MOD 2 = 1
+  END ODD;
+
+  PROCEDURE LEN*(v: ArrayType): INTEGER;
+  BEGIN RETURN (* length of array *) v
+  END LEN;
+
+  PROCEDURE LSL*(x, n: INTEGER): INTEGER;
+  BEGIN RETURN x * (* 2^ *) n
+  END LSL;
+
+  PROCEDURE ASR*(x, n: INTEGER): INTEGER;
+  BEGIN RETURN x DIV (* 2^ *) n
+  END ASR;
+
+  PROCEDURE ROR*(x, n: INTEGER): INTEGER;
+  BEGIN RETURN x (* rotated right by n bits *)
+  END ROR;
+
+  PROCEDURE FLOOR*(x: REAL): INTEGER;
+  BEGIN RETURN x (* rounded down *)
+  END FLOOR;
+
+  PROCEDURE FLT*(x: INTEGER): REAL;
+  BEGIN RETURN x
+  END FLT;
+
+  PROCEDURE ORD*(x: CharBooleanSet): INTEGER;
+  BEGIN RETURN (* ordinal number of *) x
+  END ORD;
+
+  PROCEDURE CHR*(x: INTEGER): CHAR;
+  BEGIN RETURN (* character with ordinal number *) x
+  END CHR;
+
+  PROCEDURE INC*(VAR v: INTEGER; (*OPTIONAL*) n: INTEGER);
+  BEGIN v := v + n (* or 1 if not given *)
+  END INC;
+
+  PROCEDURE DEC*(VAR v: INTEGER; (*OPTIONAL*) n: INTEGER);
+  BEGIN v := v - n (* or 1 if not given *)
+  END DEC;
+
+  PROCEDURE INCL*(VAR v: SET; x: INTEGER);
+  BEGIN v := v + (* set of only *) x
+  END INCL;
+
+  PROCEDURE EXCL*(VAR v: SET; x: INTEGER);
+  BEGIN v := v - (* set of only *) x
+  END EXCL;
+
+  PROCEDURE NEW*(VAR v: PointerType);
+  BEGIN (* allocate pointer *)
+  END NEW;
+
+  PROCEDURE ASSERT*(VAR b: BOOLEAN);
+  BEGIN IF ~b THEN (* abort *) END
+  END ASSERT;
+
+  PROCEDURE PACK*(VAR x: REAL; n: INTEGER);
+  BEGIN (* pack x * 2 ^ n into x *)
+  END PACK;
+
+  PROCEDURE UNPK*(VAR x: REAL; VAR n: INTEGER);
+  BEGIN (* unpack x into x * 2 ^ n so that 1.0 <= x < 2.0 *)
+  END UNPK;
+
+  (* UML, LED, ADC, SBC are not in language definition,
+     but UML, ADC and SBC are not used by Project Oberon *)
+
+  PROCEDURE LED*(VAR n: INTEGER);
+  BEGIN (* display n on LEDs *)
+  END LED;
+
+END BUILTINS.
