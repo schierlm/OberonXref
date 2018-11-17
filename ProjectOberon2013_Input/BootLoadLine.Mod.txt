@@ -1,0 +1,29 @@
+MODULE* BootLoadLine;  (*NW 10.2.2013, boot from line only*)
+  IMPORT SYSTEM;
+  CONST MT = 12; SP = 14; StkOrg = 0FFFE7F00H;
+    swi = -60; led = -60; data = -56; stat = -52;
+
+  PROCEDURE RecInt(VAR x: INTEGER);
+    VAR z, y, i: INTEGER;
+  BEGIN z := 0;  i := 4;
+    REPEAT i := i-1;
+      REPEAT UNTIL SYSTEM.BIT(stat, 0);
+      SYSTEM.GET(data, y); z := ROR(z+y, 8)
+    UNTIL i = 0;
+    x := z
+  END RecInt;
+
+  PROCEDURE Load;
+    VAR len, adr, dat: INTEGER;
+  BEGIN RecInt(len);
+    WHILE len > 0 DO
+      RecInt(adr);
+      REPEAT RecInt(dat); SYSTEM.PUT(adr, dat); adr := adr + 4; len := len - 4 UNTIL len = 0;
+      RecInt(len)
+    END ;
+    SYSTEM.GET(4, adr); SYSTEM.LDREG(13, adr); SYSTEM.LDREG(12, 20H)
+  END Load;
+
+BEGIN SYSTEM.LDREG(SP, StkOrg); SYSTEM.LDREG(MT, 20H); SYSTEM.PUT(led, 128); 
+  IF ~SYSTEM.BIT(swi, 0) THEN Load END
+END BootLoadLine.

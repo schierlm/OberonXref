@@ -1,0 +1,31 @@
+MODULE Fractions;  (*NW  10.10.07;  Tabulate fractions 1/n*)
+  IMPORT Texts, Oberon;
+  
+  CONST Base = 10; N = 32;
+  VAR W: Texts.Writer;
+  
+  PROCEDURE Generate*;
+    VAR i, j, m, r: INTEGER;
+      d: ARRAY N OF INTEGER;  (*digits*)
+      x: ARRAY N OF INTEGER;  (*index*)
+      S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
+    IF (S.class = Texts.Int) & (S.i < N) THEN
+      i := 2;
+      WHILE i <= S.i DO j := 0;
+        WHILE j < i DO x[j] := 0; INC(j) END ;
+        m := 0; r := 1;
+        WHILE x[r] = 0 DO
+          x[r] := m; r := Base*r; d[m] := r DIV i; r := r MOD i; INC(m)
+        END ;
+        Texts.WriteInt(W, i, 5); Texts.Write(W, 9X); Texts.Write(W, "."); j := 0;
+        WHILE j < x[r] DO Texts.Write(W, CHR(d[j] + 48)); INC(j) END ;
+        Texts.Write(W, "'");
+        WHILE j < m DO Texts.Write(W, CHR(d[j] + 48)); INC(j) END ;
+        Texts.WriteLn(W); Texts.Append(Oberon.Log, W.buf); INC(i)
+      END
+    END
+  END Generate;
+
+BEGIN Texts.OpenWriter(W)
+END Fractions.

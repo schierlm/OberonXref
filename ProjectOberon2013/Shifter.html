@@ -1,0 +1,81 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<title>Shifter &ndash; OberonXref</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript" src="script.js"></script>
+</head><body><h1>Shifter</h1><p id="togglebuttons"></p>
+<p class="usedexports"><h2>Used Exports</h2><b>BUILTINS:</b> <a name="X_BUILTINS_ASR" href="BUILTINS.html#ASR">ASR</a> <a name="X_BUILTINS_INTEGER" href="BUILTINS.html#INTEGER">INTEGER</a> <a name="X_BUILTINS_LED" href="BUILTINS.html#LED">LED</a> <a name="X_BUILTINS_LSL" href="BUILTINS.html#LSL">LSL</a><br></p>
+<table class="sourcecode showsource assemblypresent">
+<tr class="sl"><th><a name="L_1" href="#L_1" data-l="1"></th><td><span style="color: #f0f;">MODULE</span>* <a name="MODULE" href="#MODULE" style="color: #00f;">Shifter</a>;</td></tr>
+<tr class="al"><th><a name="A_    _1" href="#A_    _1">    </a></th><td><sup> </sup>               .MODULE Shifter (KEY 00000000, VERSION 0, SIZE 000000F8)</td></tr>
+<tr class="al"><th><a name="A_    _2" href="#A_    _2">    </a></th><td><sup> </sup>               .DATA 10H</td></tr>
+<tr class="al"><th><a name="A_    _3" href="#A_    _3">    </a></th><td><sup> </sup>               .FIXUP T 0H</td></tr>
+<tr class="sl"><th><a name="L_2" href="#L_2" data-l="2"></th><td>  <span style="color: #f0f;">VAR</span><sub><s><u></u><b></b></s><a name="#AR_0" href="#AR_0">a</a></sub> <a name="x" href="#x" style="color: #00f;">x</a>, <a name="y" href="#y" style="color: #00f;">y</a>, <a name="z" href="#z" style="color: #00f;">z</a>, <a name="d" href="#d" style="color: #00f;">d</a>: <a href="BUILTINS.html#INTEGER" style="color: #00f;">INTEGER</a>;</td></tr>
+<tr class="al"><th><a name="A_0000_1" href="#A_0000_1">0000</a></th><td><sup title="76"><a href="#AR_4">e</a></sup>(E7000007):    B 7 [0008H]</td></tr>
+<tr class="al"><th><a name="A_0001_1" href="#A_0001_1">0001</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0002_1" href="#A_0002_1">0002</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0003_1" href="#A_0003_1">0003</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0004_1" href="#A_0004_1">0004</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0005_1" href="#A_0005_1">0005</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0006_1" href="#A_0006_1">0006</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0007_1" href="#A_0007_1">0007</a></th><td><sup title="22"><a href="#AR_0">a</a></sup>(00000000):    MOV R0, R0, R0</td></tr>
+<tr class="sl"><th><a name="L_3" href="#L_3" data-l="3"></th><td><span style="color: #f0f;">BEGIN</span><sub><s><u></u><b></b></s><a name="#AR_1" href="#AR_1">b</a></sub>  <a href="#z" style="color: #00f;">z</a> := <span style="color: #666;">1</span>;<sub><s><u></u><b></b></s><a name="#AR_2" href="#AR_2">c</a></sub> <a href="#d" style="color: #00f;">d</a> := <span style="color: #666;">1</span>;<sub><s><u></u><b></b></s><a name="#AR_3" href="#AR_3">d</a></sub></td></tr>
+<tr class="al"><th><a name="A_0008_1" href="#A_0008_1">0008</a></th><td><sup title="49"><a href="#AR_1">b</a></sup>               .PROC 0</td></tr>
+<tr class="al"><th><a name="A_0008_2" href="#A_0008_2">0008</a></th><td><sup title="49"><a href="#AR_1">b</a></sup>               .ENTRYPOINT</td></tr>
+<tr class="al"><th><a name="A_0008_3" href="#A_0008_3">0008</a></th><td><sup title="49"><a href="#AR_1">b</a></sup>(4D000000):    MOV SB, R0, 0H</td></tr>
+<tr class="al"><th><a name="A_0009_1" href="#A_0009_1">0009</a></th><td><sup title="49"><a href="#AR_1">b</a></sup>(5E00FFC0):    MOV SP, R0, FFFFFFC0H</td></tr>
+<tr class="al"><th><a name="A_000A_1" href="#A_000A_1">000A</a></th><td><sup title="58"><a href="#AR_2">c</a></sup>(40000001):    MOV R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_000B_1" href="#A_000B_1">000B</a></th><td><sup title="58"><a href="#AR_2">c</a></sup>(A0D00008):    STR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_000C_1" href="#A_000C_1">000C</a></th><td><sup title="66"><a href="#AR_3">d</a></sup>(40000001):    MOV R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_000D_1" href="#A_000D_1">000D</a></th><td><sup title="66"><a href="#AR_3">d</a></sup>(A0D0000C):    STR R0, SB, CH</td></tr>
+<tr class="sl"><th><a name="L_4" href="#L_4" data-l="4"></th><td>  <span style="color: #f0f;">REPEAT</span> <sub><s><u></u><b></b></s><a name="#AR_4" href="#AR_4">e</a></sub><a href="BUILTINS.html#LED" style="color: #00f;">LED</a>(<a href="#z" style="color: #00f;">z</a>);<sub><s><u></u><b></b></s><a name="#AR_5" href="#AR_5">f</a></sub> <a href="#x" style="color: #00f;">x</a> := <span style="color: #666;">1000</span>;<sub><s><u></u><b></b></s><a name="#AR_6" href="#AR_6">g</a></sub></td></tr>
+<tr class="al"><th><a name="A_000E_1" href="#A_000E_1">000E</a></th><td><sup title="83"><a href="#AR_5">f</a></sup>(80D00008):    LDR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_000F_1" href="#A_000F_1">000F</a></th><td><sup title="83"><a href="#AR_5">f</a></sup>(5100FFC4):    MOV R1, R0, FFFFFFC4H</td></tr>
+<tr class="al"><th><a name="A_0010_1" href="#A_0010_1">0010</a></th><td><sup title="83"><a href="#AR_5">f</a></sup>(A0100000):    STR R0, R1, 0H</td></tr>
+<tr class="al"><th><a name="A_0011_1" href="#A_0011_1">0011</a></th><td><sup title="94"><a href="#AR_6">g</a></sup>(400003E8):    MOV R0, R0, 3E8H</td></tr>
+<tr class="al"><th><a name="A_0012_1" href="#A_0012_1">0012</a></th><td><sup title="94"><a href="#AR_6">g</a></sup>(A0D00000):    STR R0, SB, 0H</td></tr>
+<tr class="sl"><th><a name="L_5" href="#L_5" data-l="5"></th><td>     <span style="color: #f0f;">REPEAT</span> <a href="#y" style="color: #00f;">y</a> := <span style="color: #666;">1000</span>;<sub><s><u></u><b></b></s><a name="#AR_7" href="#AR_7">h</a></sub></td></tr>
+<tr class="al"><th><a name="A_0013_1" href="#A_0013_1">0013</a></th><td><sup title="117"><a href="#AR_7">h</a></sup>(400003E8):    MOV R0, R0, 3E8H</td></tr>
+<tr class="al"><th><a name="A_0014_1" href="#A_0014_1">0014</a></th><td><sup title="117"><a href="#AR_7">h</a></sup>(A0D00004):    STR R0, SB, 4H</td></tr>
+<tr class="sl"><th><a name="L_6" href="#L_6" data-l="6"></th><td>       <span style="color: #f0f;">REPEAT</span> <a href="#y" style="color: #00f;">y</a> := <a href="#y" style="color: #00f;">y</a>-<span style="color: #666;">1</span> <span style="color: #f0f;">UNTIL</span><sub><s><u></u><b></b></s><a name="#AR_8" href="#AR_8">i</a></sub> <a href="#y" style="color: #00f;">y</a> = <span style="color: #666;">0</span>;<sub><s><u></u><b></b></s><a name="#AR_9" href="#AR_9">j</a></sub></td></tr>
+<tr class="al"><th><a name="A_0015_1" href="#A_0015_1">0015</a></th><td><sup title="146"><a href="#AR_8">i</a></sup>(80D00004):    LDR R0, SB, 4H</td></tr>
+<tr class="al"><th><a name="A_0016_1" href="#A_0016_1">0016</a></th><td><sup title="146"><a href="#AR_8">i</a></sup>(40090001):    SUB R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0017_1" href="#A_0017_1">0017</a></th><td><sup title="146"><a href="#AR_8">i</a></sup>(A0D00004):    STR R0, SB, 4H</td></tr>
+<tr class="al"><th><a name="A_0018_1" href="#A_0018_1">0018</a></th><td><sup title="153"><a href="#AR_9">j</a></sup>(80D00004):    LDR R0, SB, 4H</td></tr>
+<tr class="al"><th><a name="A_0019_1" href="#A_0019_1">0019</a></th><td><sup title="153"><a href="#AR_9">j</a></sup>(E9FFFFFB):    BNE -5 [0015H]</td></tr>
+<tr class="sl"><th><a name="L_7" href="#L_7" data-l="7"></th><td>       <a href="#x" style="color: #00f;">x</a> := <a href="#x" style="color: #00f;">x</a>-<span style="color: #666;">1</span></td></tr>
+<tr class="sl"><th><a name="L_8" href="#L_8" data-l="8"></th><td>     <span style="color: #f0f;">UNTIL</span><sub><s><u></u><b></b></s><a name="#AR_10" href="#AR_10">k</a></sub> <a href="#x" style="color: #00f;">x</a> = <span style="color: #666;">0</span>;<sub><s><u></u><b></b></s><a name="#AR_11" href="#AR_11">l</a></sub></td></tr>
+<tr class="al"><th><a name="A_001A_1" href="#A_001A_1">001A</a></th><td><sup title="180"><a href="#AR_10">k</a></sup>(80D00000):    LDR R0, SB, 0H</td></tr>
+<tr class="al"><th><a name="A_001B_1" href="#A_001B_1">001B</a></th><td><sup title="180"><a href="#AR_10">k</a></sup>(40090001):    SUB R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_001C_1" href="#A_001C_1">001C</a></th><td><sup title="180"><a href="#AR_10">k</a></sup>(A0D00000):    STR R0, SB, 0H</td></tr>
+<tr class="al"><th><a name="A_001D_1" href="#A_001D_1">001D</a></th><td><sup title="187"><a href="#AR_11">l</a></sup>(80D00000):    LDR R0, SB, 0H</td></tr>
+<tr class="al"><th><a name="A_001E_1" href="#A_001E_1">001E</a></th><td><sup title="187"><a href="#AR_11">l</a></sup>(E9FFFFF4):    BNE -12 [0013H]</td></tr>
+<tr class="sl"><th><a name="L_9" href="#L_9" data-l="9"></th><td>     <span style="color: #f0f;">IF</span> <a href="#z" style="color: #00f;">z</a> = <span style="color: #666;">128</span> <span style="color: #f0f;">THEN</span><sub><s><u></u><b></b></s><a name="#AR_12" href="#AR_12">m</a></sub> <a href="#d" style="color: #00f;">d</a> := -<span style="color: #666;">1</span> <span style="color: #f0f;">ELSIF</span><sub><s><u></u><b></b></s><a name="#AR_13" href="#AR_13">n</a></sub> <a href="#z" style="color: #00f;">z</a><sub><s><u></u><b></b></s><a name="#AR_14" href="#AR_14">o</a></sub> = <span style="color: #666;">1</span> <span style="color: #f0f;">THEN</span><sub><s><u></u><b></b></s><a name="#AR_15" href="#AR_15">p</a></sub> <a href="#d" style="color: #00f;">d</a> := <span style="color: #666;">1</span> <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_16" href="#AR_16">q</a></sub> ;</td></tr>
+<tr class="al"><th><a name="A_001F_1" href="#A_001F_1">001F</a></th><td><sup title="208"><a href="#AR_12">m</a></sup>(80D00008):    LDR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_0020_1" href="#A_0020_1">0020</a></th><td><sup title="208"><a href="#AR_12">m</a></sup>(40090080):    SUB R0, R0, 80H</td></tr>
+<tr class="al"><th><a name="A_0021_1" href="#A_0021_1">0021</a></th><td><sup title="208"><a href="#AR_12">m</a></sup>(E9000003):    BNE 3 [0025H]</td></tr>
+<tr class="al"><th><a name="A_0022_1" href="#A_0022_1">0022</a></th><td><sup title="222"><a href="#AR_13">n</a></sup>(5000FFFF):    MOV R0, R0, FFFFFFFFH</td></tr>
+<tr class="al"><th><a name="A_0023_1" href="#A_0023_1">0023</a></th><td><sup title="222"><a href="#AR_13">n</a></sup>(A0D0000C):    STR R0, SB, CH</td></tr>
+<tr class="al"><th><a name="A_0024_1" href="#A_0024_1">0024</a></th><td><sup title="224"><a href="#AR_14">o</a></sup>(E7000005):    B 5 [002AH]</td></tr>
+<tr class="al"><th><a name="A_0025_1" href="#A_0025_1">0025</a></th><td><sup title="233"><a href="#AR_15">p</a></sup>(80D00008):    LDR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_0026_1" href="#A_0026_1">0026</a></th><td><sup title="233"><a href="#AR_15">p</a></sup>(40090001):    SUB R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0027_1" href="#A_0027_1">0027</a></th><td><sup title="233"><a href="#AR_15">p</a></sup>(E9000002):    BNE 2 [002AH]</td></tr>
+<tr class="al"><th><a name="A_0028_1" href="#A_0028_1">0028</a></th><td><sup title="244"><a href="#AR_16">q</a></sup>(40000001):    MOV R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0029_1" href="#A_0029_1">0029</a></th><td><sup title="244"><a href="#AR_16">q</a></sup>(A0D0000C):    STR R0, SB, CH</td></tr>
+<tr class="sl"><th><a name="L_10" href="#L_10" data-l="10"></th><td>     <span style="color: #f0f;">IF</span> <a href="#d" style="color: #00f;">d</a> = <span style="color: #666;">1</span> <span style="color: #f0f;">THEN</span><sub><s><u></u><b></b></s><a name="#AR_17" href="#AR_17">r</a></sub> <a href="#z" style="color: #00f;">z</a> := <a href="BUILTINS.html#LSL" style="color: #00f;">LSL</a>(<a href="#z" style="color: #00f;">z</a>, <span style="color: #666;">1</span>) <span style="color: #f0f;">ELSE</span><sub><s><u></u><b></b></s><a name="#AR_18" href="#AR_18">s</a></sub> <a href="#z" style="color: #00f;">z</a><sub><s><u></u><b></b></s><a name="#AR_19" href="#AR_19">t</a></sub> := <a href="BUILTINS.html#ASR" style="color: #00f;">ASR</a>(<a href="#z" style="color: #00f;">z</a>, <span style="color: #666;">1</span>) <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_20" href="#AR_20">u</a></sub></td></tr>
+<tr class="al"><th><a name="A_002A_1" href="#A_002A_1">002A</a></th><td><sup title="265"><a href="#AR_17">r</a></sup>(80D0000C):    LDR R0, SB, CH</td></tr>
+<tr class="al"><th><a name="A_002B_1" href="#A_002B_1">002B</a></th><td><sup title="265"><a href="#AR_17">r</a></sup>(40090001):    SUB R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_002C_1" href="#A_002C_1">002C</a></th><td><sup title="265"><a href="#AR_17">r</a></sup>(E9000004):    BNE 4 [0031H]</td></tr>
+<tr class="al"><th><a name="A_002D_1" href="#A_002D_1">002D</a></th><td><sup title="285"><a href="#AR_18">s</a></sup>(80D00008):    LDR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_002E_1" href="#A_002E_1">002E</a></th><td><sup title="285"><a href="#AR_18">s</a></sup>(40010001):    LSL R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_002F_1" href="#A_002F_1">002F</a></th><td><sup title="285"><a href="#AR_18">s</a></sup>(A0D00008):    STR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_0030_1" href="#A_0030_1">0030</a></th><td><sup title="287"><a href="#AR_19">t</a></sup>(E7000003):    B 3 [0034H]</td></tr>
+<tr class="al"><th><a name="A_0031_1" href="#A_0031_1">0031</a></th><td><sup title="304"><a href="#AR_20">u</a></sup>(80D00008):    LDR R0, SB, 8H</td></tr>
+<tr class="al"><th><a name="A_0032_1" href="#A_0032_1">0032</a></th><td><sup title="304"><a href="#AR_20">u</a></sup>(40020001):    ASR R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0033_1" href="#A_0033_1">0033</a></th><td><sup title="304"><a href="#AR_20">u</a></sup>(A0D00008):    STR R0, SB, 8H</td></tr>
+<tr class="sl"><th><a name="L_11" href="#L_11" data-l="11"></th><td>   <span style="color: #f0f;">UNTIL</span> <span style="color: #f0f;">FALSE</span></td></tr>
+<tr class="sl"><th><a name="L_12" href="#L_12" data-l="12"></th><td><span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_21" href="#AR_21">v</a></sub> <a href="#MODULE" style="color: #00f;">Shifter</a>.<sub><s><u></u><b></b></s><a name="#AR_22" href="#AR_22">w</a></sub></td></tr>
+<tr class="al"><th><a name="A_0034_1" href="#A_0034_1">0034</a></th><td><sup title="323"><a href="#AR_21">v</a></sup>(E7FFFFD9):    B -39 [000EH]</td></tr>
+<tr class="al"><th><a name="A_0035_1" href="#A_0035_1">0035</a></th><td><sup title="332"><a href="#AR_22">w</a></sup>(40000000):    MOV R0, R0, 0H</td></tr>
+<tr class="al"><th><a name="A_0036_1" href="#A_0036_1">0036</a></th><td><sup title="332"><a href="#AR_22">w</a></sup>(C7000000):    B R0</td></tr>
+</table></body></html>

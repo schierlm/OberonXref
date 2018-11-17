@@ -1,0 +1,20 @@
+MODULE Harmonic;   (*NW 27.1.2013*)
+  IMPORT Texts, Oberon;
+  VAR W: Texts.Writer;
+  
+  PROCEDURE Compute*;
+      VAR n: INTEGER;
+        x0, x1, u: REAL;
+        S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
+    IF (S.class = Texts.Int) & (S.i > 0) THEN
+      n := 0; u := 0.0; x0 := 0.0; x1 := 0.0;
+      WHILE n < S.i DO INC(n); u := u + 1.0; x0 := x0 + 1.0/u END ;
+      WHILE n > 0 DO x1 := x1 + 1.0/u; u := u - 1.0; DEC(n) END ;
+      Texts.WriteInt(W, S.i, 6); Texts.WriteReal(W, x0, 15); Texts.WriteReal(W, x1, 15);
+      Texts.WriteLn(W); Texts.Append(Oberon.Log, W.buf);
+    END
+  END Compute;
+
+BEGIN Texts.OpenWriter(W)
+END Harmonic.

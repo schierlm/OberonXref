@@ -1,0 +1,12 @@
+MODULE* Shifter;
+  VAR x, y, z, d: INTEGER;
+BEGIN  z := 1; d := 1;
+  REPEAT LED(z); x := 1000;
+     REPEAT y := 1000;
+       REPEAT y := y-1 UNTIL y = 0;
+       x := x-1
+     UNTIL x = 0;
+     IF z = 128 THEN d := -1 ELSIF z = 1 THEN d := 1 END ;
+     IF d = 1 THEN z := LSL(z, 1) ELSE z := ASR(z, 1) END
+   UNTIL FALSE
+END Shifter.

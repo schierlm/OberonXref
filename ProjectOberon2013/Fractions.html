@@ -1,0 +1,272 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<title>Fractions &ndash; OberonXref</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript" src="script.js"></script>
+</head><body><h1>Fractions</h1><p id="togglebuttons"></p>
+<p class="usedexports"><h2>Used Exports</h2><b>BUILTINS:</b> <a name="X_BUILTINS_CHR" href="BUILTINS.html#CHR">CHR</a> <a name="X_BUILTINS_INC" href="BUILTINS.html#INC">INC</a> <a name="X_BUILTINS_INTEGER" href="BUILTINS.html#INTEGER">INTEGER</a><br><b>Oberon:</b> <a name="X_Oberon_Log" href="Oberon.html#Log">Log</a> <a name="X_Oberon_Par" href="Oberon.html#Par">Par</a> <a name="X_Oberon_Par.pos" href="Oberon.html#Par.pos">Par.pos</a> <a name="X_Oberon_Par.text" href="Oberon.html#Par.text">Par.text</a><br><b>Texts:</b> <a name="X_Texts_Append" href="Texts.html#Append">Append</a> <a name="X_Texts_Int" href="Texts.html#Int">Int</a> <a name="X_Texts_OpenScanner" href="Texts.html#OpenScanner">OpenScanner</a> <a name="X_Texts_OpenWriter" href="Texts.html#OpenWriter">OpenWriter</a> <a name="X_Texts_Scan" href="Texts.html#Scan">Scan</a> <a name="X_Texts_Scanner" href="Texts.html#Scanner">Scanner</a> <a name="X_Texts_Scanner.class" href="Texts.html#Scanner.class">Scanner.class</a> <a name="X_Texts_Scanner.i" href="Texts.html#Scanner.i">Scanner.i</a> <a name="X_Texts_Write" href="Texts.html#Write">Write</a> <a name="X_Texts_WriteInt" href="Texts.html#WriteInt">WriteInt</a> <a name="X_Texts_WriteLn" href="Texts.html#WriteLn">WriteLn</a> <a name="X_Texts_Writer" href="Texts.html#Writer">Writer</a> <a name="X_Texts_Writer.buf" href="Texts.html#Writer.buf">Writer.buf</a><br></p>
+<table class="sourcecode showsource assemblypresent">
+<tr class="sl"><th><a name="L_1" href="#L_1" data-l="1"></th><td><span style="color: #f0f;">MODULE</span> <a name="MODULE" href="#MODULE" style="color: #00f;">Fractions</a>;  <span style="color: #0a0;">(*NW  10.10.07;  Tabulate fractions 1/n*)</span></td></tr>
+<tr class="al"><th><a name="A_    _1" href="#A_    _1">    </a></th><td><sup> </sup>               .MODULE Fractions (KEY 94BFA2E6, VERSION 1, SIZE 00000354)</td></tr>
+<tr class="al"><th><a name="A_    _2" href="#A_    _2">    </a></th><td><sup> </sup>               .IMPORT Texts (KEY 0B9E9984)</td></tr>
+<tr class="al"><th><a name="A_    _3" href="#A_    _3">    </a></th><td><sup> </sup>               .IMPORT Fonts (KEY F4C9F557)</td></tr>
+<tr class="al"><th><a name="A_    _4" href="#A_    _4">    </a></th><td><sup> </sup>               .IMPORT Files (KEY 73F5D686)</td></tr>
+<tr class="al"><th><a name="A_    _5" href="#A_    _5">    </a></th><td><sup> </sup>               .IMPORT Oberon (KEY A89CCEE2)</td></tr>
+<tr class="al"><th><a name="A_    _6" href="#A_    _6">    </a></th><td><sup> </sup>               .IMPORT Display (KEY 4C08D3EA)</td></tr>
+<tr class="al"><th><a name="A_    _7" href="#A_    _7">    </a></th><td><sup> </sup>               .IMPORT Viewers (KEY 25ABF199)</td></tr>
+<tr class="al"><th><a name="A_    _8" href="#A_    _8">    </a></th><td><sup> </sup>               .DATA 28H</td></tr>
+<tr class="al"><th><a name="A_    _9" href="#A_    _9">    </a></th><td><sup> </sup>               .POINTER_REFERENCES 0H 4H 24H 18H</td></tr>
+<tr class="al"><th><a name="A_    _10" href="#A_    _10">    </a></th><td><sup> </sup>               .FIXUP T 0H</td></tr>
+<tr class="sl"><th><a name="L_2" href="#L_2" data-l="2"></th><td>  <span style="color: #f0f;">IMPORT</span> <a name="Texts" href="#Texts" style="color: #00f;">Texts</a>, <a name="Oberon" href="#Oberon" style="color: #00f;">Oberon</a>;</td></tr>
+<tr class="sl"><th><a name="L_3" href="#L_3" data-l="3"></th><td>  </td></tr>
+<tr class="sl"><th><a name="L_4" href="#L_4" data-l="4"></th><td>  <span style="color: #f0f;">CONST</span> <a name="Base" href="#Base" style="color: #00f;">Base</a> = <span style="color: #666;">10</span>; <a name="N" href="#N" style="color: #00f;">N</a> = <span style="color: #666;">32</span>;</td></tr>
+<tr class="sl"><th><a name="L_5" href="#L_5" data-l="5"></th><td>  <span style="color: #f0f;">VAR</span> <a name="W" href="#W" style="color: #00f;">W</a>: <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Writer" style="color: #00f;">Writer</a>;</td></tr>
+<tr class="sl"><th><a name="L_6" href="#L_6" data-l="6"></th><td>  </td></tr>
+<tr class="sl"><th><a name="L_7" href="#L_7" data-l="7"></th><td>  <span style="color: #f0f;">PROCEDURE</span> <a name="Generate" href="#Generate" style="color: #00f;">Generate</a><a href="Fractions-usage.html#Generate">*</a>;</td></tr>
+<tr class="sl"><th><a name="L_8" href="#L_8" data-l="8"></th><td>    <span style="color: #f0f;">VAR</span> <a name="Generate.i" href="#Generate.i" style="color: #00f;">i</a>, <a name="Generate.j" href="#Generate.j" style="color: #00f;">j</a>, <a name="Generate.m" href="#Generate.m" style="color: #00f;">m</a>, <a name="Generate.r" href="#Generate.r" style="color: #00f;">r</a>: <a href="BUILTINS.html#INTEGER" style="color: #00f;">INTEGER</a>;</td></tr>
+<tr class="sl"><th><a name="L_9" href="#L_9" data-l="9"></th><td>      <a name="Generate.d" href="#Generate.d" style="color: #00f;">d</a>: <span style="color: #f0f;">ARRAY</span> <a href="#N" style="color: #00f;">N</a> <span style="color: #f0f;">OF</span> <a href="BUILTINS.html#INTEGER" style="color: #00f;">INTEGER</a>;  <span style="color: #0a0;">(*digits*)</span></td></tr>
+<tr class="sl"><th><a name="L_10" href="#L_10" data-l="10"></th><td>      <a name="Generate.x" href="#Generate.x" style="color: #00f;">x</a>: <span style="color: #f0f;">ARRAY</span> <a href="#N" style="color: #00f;">N</a> <span style="color: #f0f;">OF</span> <a href="BUILTINS.html#INTEGER" style="color: #00f;">INTEGER</a>;  <span style="color: #0a0;">(*index*)</span></td></tr>
+<tr class="sl"><th><a name="L_11" href="#L_11" data-l="11"></th><td>      <a name="Generate.S" href="#Generate.S" style="color: #00f;">S</a>: <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Scanner" style="color: #00f;">Scanner</a>;</td></tr>
+<tr class="sl"><th><a name="L_12" href="#L_12" data-l="12"></th><td>  <span style="color: #f0f;">BEGIN</span><sub><s><u></u><b></b></s><a name="#AR_0" href="#AR_0">a</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#OpenScanner" style="color: #00f;">OpenScanner</a>(<a href="#Generate.S" style="color: #00f;">S</a>,<sub><s><u></u><b></b></s><a name="#AR_1" href="#AR_1">b</a></sub> <a href="#Oberon" style="color: #00f;">Oberon</a>.<a href="Oberon.html#Par" style="color: #00f;">Par</a>.<a href="Oberon.html#Par.text" style="color: #00f;">text</a>,<sub><s><u></u><b></b></s><a name="#AR_2" href="#AR_2">c</a></sub> <a href="#Oberon" style="color: #00f;">Oberon</a>.<a href="Oberon.html#Par" style="color: #00f;">Par</a>.<a href="Oberon.html#Par.pos" style="color: #00f;">pos</a>)<sub><s><u></u><b></b></s><a name="#AR_3" href="#AR_3">d</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_4" href="#AR_4">e</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Scan" style="color: #00f;">Scan</a>(<a href="#Generate.S" style="color: #00f;">S</a>)<sub><s><u></u><b></b></s><a name="#AR_5" href="#AR_5">f</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_6" href="#AR_6">g</a></sub></td></tr>
+<tr class="al"><th><a name="A_0000_1" href="#A_0000_1">0000</a></th><td><sup title="305"><a href="#AR_0">a</a></sup>               .PROC 1</td></tr>
+<tr class="al"><th><a name="A_0000_2" href="#A_0000_2">0000</a></th><td><sup title="305"><a href="#AR_0">a</a></sup>               .COMMAND Generate</td></tr>
+<tr class="al"><th><a name="A_0000_3" href="#A_0000_3">0000</a></th><td><sup title="305"><a href="#AR_0">a</a></sup>(4EE90188):    SUB SP, SP, 188H</td></tr>
+<tr class="al"><th><a name="A_0001_1" href="#A_0001_1">0001</a></th><td><sup title="305"><a href="#AR_0">a</a></sup>(AFE00000):    STR LNK, SP, 0H</td></tr>
+<tr class="al"><th><a name="A_0002_1" href="#A_0002_1">0002</a></th><td><sup title="326"><a href="#AR_1">b</a></sup>(40E80114):    ADD R0, SP, 114H</td></tr>
+<tr class="al"><th><a name="A_0003_1" href="#A_0003_1">0003</a></th><td><sup title="326"><a href="#AR_1">b</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0003_2" href="#A_0003_2">0003</a></th><td><sup title="326"><a href="#AR_1">b</a></sup>(8D100003):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0004_1" href="#A_0004_1">0004</a></th><td><sup title="326"><a href="#AR_1">b</a></sup>(41D80003):    ADD R1, SB, VAR3</td></tr>
+<tr class="al"><th><a name="A_0005_1" href="#A_0005_1">0005</a></th><td><sup title="343"><a href="#AR_2">c</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0005_2" href="#A_0005_2">0005</a></th><td><sup title="343"><a href="#AR_2">c</a></sup>(8D400002):    LDR SB, MT, MOD4 [Oberon]</td></tr>
+<tr class="al"><th><a name="A_0006_1" href="#A_0006_1">0006</a></th><td><sup title="343"><a href="#AR_2">c</a></sup>(42D8000E):    ADD R2, SB, VAR14</td></tr>
+<tr class="al"><th><a name="A_0007_1" href="#A_0007_1">0007</a></th><td><sup title="343"><a href="#AR_2">c</a></sup>(82200008):    LDR R2, R2, 8H</td></tr>
+<tr class="al"><th><a name="A_0008_1" href="#A_0008_1">0008</a></th><td><sup title="359"><a href="#AR_3">d</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0008_2" href="#A_0008_2">0008</a></th><td><sup title="359"><a href="#AR_3">d</a></sup>(8D400003):    LDR SB, MT, MOD4 [Oberon]</td></tr>
+<tr class="al"><th><a name="A_0009_1" href="#A_0009_1">0009</a></th><td><sup title="359"><a href="#AR_3">d</a></sup>(43D8000E):    ADD R3, SB, VAR14</td></tr>
+<tr class="al"><th><a name="A_000A_1" href="#A_000A_1">000A</a></th><td><sup title="359"><a href="#AR_3">d</a></sup>(8330000C):    LDR R3, R3, CH</td></tr>
+<tr class="al"><th><a name="A_000B_1" href="#A_000B_1">000B</a></th><td><sup title="360"><a href="#AR_4">e</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_000B_2" href="#A_000B_2">000B</a></th><td><sup title="360"><a href="#AR_4">e</a></sup>(F711500B):    BL MOD1 [Texts] PROC21</td></tr>
+<tr class="al"><th><a name="A_000C_1" href="#A_000C_1">000C</a></th><td><sup title="374"><a href="#AR_5">f</a></sup>(40E80114):    ADD R0, SP, 114H</td></tr>
+<tr class="al"><th><a name="A_000D_1" href="#A_000D_1">000D</a></th><td><sup title="374"><a href="#AR_5">f</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_000D_2" href="#A_000D_2">000D</a></th><td><sup title="374"><a href="#AR_5">f</a></sup>(8D100005):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_000E_1" href="#A_000E_1">000E</a></th><td><sup title="374"><a href="#AR_5">f</a></sup>(41D80003):    ADD R1, SB, VAR3</td></tr>
+<tr class="al"><th><a name="A_000F_1" href="#A_000F_1">000F</a></th><td><sup title="375"><a href="#AR_6">g</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_000F_2" href="#A_000F_2">000F</a></th><td><sup title="375"><a href="#AR_6">g</a></sup>(F7116004):    BL MOD1 [Texts] PROC22</td></tr>
+<tr class="sl"><th><a name="L_13" href="#L_13" data-l="13"></th><td>    <span style="color: #f0f;">IF</span> (<a href="#Generate.S" style="color: #00f;">S</a>.<a href="Texts.html#Scanner.class" style="color: #00f;">class</a> = <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Int" style="color: #00f;">Int</a>)<sub><s><u></u><b></b></s><a name="#AR_7" href="#AR_7">h</a></sub> &amp; (<sub><s><u></u><b></b></s><a name="#AR_8" href="#AR_8">i</a></sub><a href="#Generate.S" style="color: #00f;">S</a>.<a href="Texts.html#Scanner.i" style="color: #00f;">i</a> &lt; <a href="#N" style="color: #00f;">N</a>)<sub><s><u></u><b></b></s><a name="#AR_9" href="#AR_9">j</a></sub> <span style="color: #f0f;">THEN</span><sub><s><u></u><b></b></s><a name="#AR_10" href="#AR_10">k</a></sub></td></tr>
+<tr class="al"><th><a name="A_0010_1" href="#A_0010_1">0010</a></th><td><sup title="404"><a href="#AR_7">h</a></sup>(80E00150):    LDR R0, SP, 150H</td></tr>
+<tr class="al"><th><a name="A_0011_1" href="#A_0011_1">0011</a></th><td><sup title="404"><a href="#AR_7">h</a></sup>(40090003):    SUB R0, R0, 3H</td></tr>
+<tr class="al"><th><a name="A_0012_1" href="#A_0012_1">0012</a></th><td><sup title="408"><a href="#AR_8">i</a></sup>(E9000099):    BNE 153 [00ACH]</td></tr>
+<tr class="al"><th><a name="A_0013_1" href="#A_0013_1">0013</a></th><td><sup title="416"><a href="#AR_9">j</a></sup>(80E00154):    LDR R0, SP, 154H</td></tr>
+<tr class="al"><th><a name="A_0014_1" href="#A_0014_1">0014</a></th><td><sup title="416"><a href="#AR_9">j</a></sup>(40090020):    SUB R0, R0, 20H</td></tr>
+<tr class="al"><th><a name="A_0015_1" href="#A_0015_1">0015</a></th><td><sup title="421"><a href="#AR_10">k</a></sup>(ED000096):    BGE 150 [00ACH]</td></tr>
+<tr class="sl"><th><a name="L_14" href="#L_14" data-l="14"></th><td>      <a href="#Generate.i" style="color: #00f;">i</a> := <span style="color: #666;">2</span>;<sub><s><u></u><b></b></s><a name="#AR_11" href="#AR_11">l</a></sub></td></tr>
+<tr class="al"><th><a name="A_0016_1" href="#A_0016_1">0016</a></th><td><sup title="435"><a href="#AR_11">l</a></sup>(40000002):    MOV R0, R0, 2H</td></tr>
+<tr class="al"><th><a name="A_0017_1" href="#A_0017_1">0017</a></th><td><sup title="435"><a href="#AR_11">l</a></sup>(A0E00004):    STR R0, SP, 4H</td></tr>
+<tr class="sl"><th><a name="L_15" href="#L_15" data-l="15"></th><td>      <span style="color: #f0f;">WHILE</span> <a href="#Generate.i" style="color: #00f;">i</a> &lt;= <a href="#Generate.S" style="color: #00f;">S</a>.<a href="Texts.html#Scanner.i" style="color: #00f;">i</a> <span style="color: #f0f;">DO</span><sub><s><u></u><b></b></s><a name="#AR_12" href="#AR_12">m</a></sub> <a href="#Generate.j" style="color: #00f;">j</a> := <span style="color: #666;">0</span>;<sub><s><u></u><b></b></s><a name="#AR_13" href="#AR_13">n</a></sub></td></tr>
+<tr class="al"><th><a name="A_0018_1" href="#A_0018_1">0018</a></th><td><sup title="459"><a href="#AR_12">m</a></sup>(80E00004):    LDR R0, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_0019_1" href="#A_0019_1">0019</a></th><td><sup title="459"><a href="#AR_12">m</a></sup>(81E00154):    LDR R1, SP, 154H</td></tr>
+<tr class="al"><th><a name="A_001A_1" href="#A_001A_1">001A</a></th><td><sup title="459"><a href="#AR_12">m</a></sup>(00090001):    SUB R0, R0, R1</td></tr>
+<tr class="al"><th><a name="A_001B_1" href="#A_001B_1">001B</a></th><td><sup title="459"><a href="#AR_12">m</a></sup>(EE000090):    BGT 144 [00ACH]</td></tr>
+<tr class="al"><th><a name="A_001C_1" href="#A_001C_1">001C</a></th><td><sup title="467"><a href="#AR_13">n</a></sup>(40000000):    MOV R0, R0, 0H</td></tr>
+<tr class="al"><th><a name="A_001D_1" href="#A_001D_1">001D</a></th><td><sup title="467"><a href="#AR_13">n</a></sup>(A0E00008):    STR R0, SP, 8H</td></tr>
+<tr class="sl"><th><a name="L_16" href="#L_16" data-l="16"></th><td>        <span style="color: #f0f;">WHILE</span> <a href="#Generate.j" style="color: #00f;">j</a> &lt; <a href="#Generate.i" style="color: #00f;">i</a> <span style="color: #f0f;">DO</span><sub><s><u></u><b></b></s><a name="#AR_14" href="#AR_14">o</a></sub> <a href="#Generate.x" style="color: #00f;">x</a>[<a href="#Generate.j" style="color: #00f;">j</a>]<sub><s><u></u><b></b></s><a name="#AR_15" href="#AR_15">p</a></sub> := <span style="color: #666;">0</span>;<sub><s><u></u><b></b></s><a name="#AR_16" href="#AR_16">q</a></sub> <a href="BUILTINS.html#INC" style="color: #00f;">INC</a>(<a href="#Generate.j" style="color: #00f;">j</a>) <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_17" href="#AR_17">r</a></sub> ;</td></tr>
+<tr class="al"><th><a name="A_001E_1" href="#A_001E_1">001E</a></th><td><sup title="490"><a href="#AR_14">o</a></sup>(80E00008):    LDR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_001F_1" href="#A_001F_1">001F</a></th><td><sup title="490"><a href="#AR_14">o</a></sup>(81E00004):    LDR R1, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_0020_1" href="#A_0020_1">0020</a></th><td><sup title="490"><a href="#AR_14">o</a></sup>(00090001):    SUB R0, R0, R1</td></tr>
+<tr class="al"><th><a name="A_0021_1" href="#A_0021_1">0021</a></th><td><sup title="490"><a href="#AR_14">o</a></sup>(ED00000B):    BGE 11 [002DH]</td></tr>
+<tr class="al"><th><a name="A_0022_1" href="#A_0022_1">0022</a></th><td><sup title="495"><a href="#AR_15">p</a></sup>(80E00008):    LDR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_0023_1" href="#A_0023_1">0023</a></th><td><sup title="495"><a href="#AR_15">p</a></sup>(41090020):    SUB R1, R0, 20H</td></tr>
+<tr class="al"><th><a name="A_0024_1" href="#A_0024_1">0024</a></th><td><sup title="495"><a href="#AR_15">p</a></sup>(DA01EF1C):    BLCC MT [trap=1, pos=495]</td></tr>
+<tr class="al"><th><a name="A_0025_1" href="#A_0025_1">0025</a></th><td><sup title="495"><a href="#AR_15">p</a></sup>(40010002):    LSL R0, R0, 2H</td></tr>
+<tr class="al"><th><a name="A_0026_1" href="#A_0026_1">0026</a></th><td><sup title="495"><a href="#AR_15">p</a></sup>(00E80000):    ADD R0, SP, R0</td></tr>
+<tr class="al"><th><a name="A_0027_1" href="#A_0027_1">0027</a></th><td><sup title="501"><a href="#AR_16">q</a></sup>(41000000):    MOV R1, R0, 0H</td></tr>
+<tr class="al"><th><a name="A_0028_1" href="#A_0028_1">0028</a></th><td><sup title="501"><a href="#AR_16">q</a></sup>(A1000094):    STR R1, R0, 94H</td></tr>
+<tr class="al"><th><a name="A_0029_1" href="#A_0029_1">0029</a></th><td><sup title="512"><a href="#AR_17">r</a></sup>(80E00008):    LDR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_002A_1" href="#A_002A_1">002A</a></th><td><sup title="512"><a href="#AR_17">r</a></sup>(40080001):    ADD R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_002B_1" href="#A_002B_1">002B</a></th><td><sup title="512"><a href="#AR_17">r</a></sup>(A0E00008):    STR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_002C_1" href="#A_002C_1">002C</a></th><td><sup title="512"><a href="#AR_17">r</a></sup>(E7FFFFF1):    B -15 [001EH]</td></tr>
+<tr class="sl"><th><a name="L_17" href="#L_17" data-l="17"></th><td>        <a href="#Generate.m" style="color: #00f;">m</a> := <span style="color: #666;">0</span>;<sub><s><u></u><b></b></s><a name="#AR_18" href="#AR_18">s</a></sub> <a href="#Generate.r" style="color: #00f;">r</a> := <span style="color: #666;">1</span>;<sub><s><u></u><b></b></s><a name="#AR_19" href="#AR_19">t</a></sub></td></tr>
+<tr class="al"><th><a name="A_002D_1" href="#A_002D_1">002D</a></th><td><sup title="530"><a href="#AR_18">s</a></sup>(40000000):    MOV R0, R0, 0H</td></tr>
+<tr class="al"><th><a name="A_002E_1" href="#A_002E_1">002E</a></th><td><sup title="530"><a href="#AR_18">s</a></sup>(A0E0000C):    STR R0, SP, CH</td></tr>
+<tr class="al"><th><a name="A_002F_1" href="#A_002F_1">002F</a></th><td><sup title="538"><a href="#AR_19">t</a></sup>(40000001):    MOV R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0030_1" href="#A_0030_1">0030</a></th><td><sup title="538"><a href="#AR_19">t</a></sup>(A0E00010):    STR R0, SP, 10H</td></tr>
+<tr class="sl"><th><a name="L_18" href="#L_18" data-l="18"></th><td>        <span style="color: #f0f;">WHILE</span> <a href="#Generate.x" style="color: #00f;">x</a>[<a href="#Generate.r" style="color: #00f;">r</a>]<sub><s><u></u><b></b></s><a name="#AR_20" href="#AR_20">u</a></sub> = <span style="color: #666;">0</span> <span style="color: #f0f;">DO</span><sub><s><u></u><b></b></s><a name="#AR_21" href="#AR_21">v</a></sub></td></tr>
+<tr class="al"><th><a name="A_0031_1" href="#A_0031_1">0031</a></th><td><sup title="557"><a href="#AR_20">u</a></sup>(80E00010):    LDR R0, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_0032_1" href="#A_0032_1">0032</a></th><td><sup title="557"><a href="#AR_20">u</a></sup>(41090020):    SUB R1, R0, 20H</td></tr>
+<tr class="al"><th><a name="A_0033_1" href="#A_0033_1">0033</a></th><td><sup title="557"><a href="#AR_20">u</a></sup>(DA022D1C):    BLCC MT [trap=1, pos=557]</td></tr>
+<tr class="al"><th><a name="A_0034_1" href="#A_0034_1">0034</a></th><td><sup title="557"><a href="#AR_20">u</a></sup>(40010002):    LSL R0, R0, 2H</td></tr>
+<tr class="al"><th><a name="A_0035_1" href="#A_0035_1">0035</a></th><td><sup title="557"><a href="#AR_20">u</a></sup>(00E80000):    ADD R0, SP, R0</td></tr>
+<tr class="al"><th><a name="A_0036_1" href="#A_0036_1">0036</a></th><td><sup title="564"><a href="#AR_21">v</a></sup>(80000094):    LDR R0, R0, 94H</td></tr>
+<tr class="al"><th><a name="A_0037_1" href="#A_0037_1">0037</a></th><td><sup title="564"><a href="#AR_21">v</a></sup>(E900001E):    BNE 30 [0056H]</td></tr>
+<tr class="sl"><th><a name="L_19" href="#L_19" data-l="19"></th><td>          <a href="#Generate.x" style="color: #00f;">x</a>[<a href="#Generate.r" style="color: #00f;">r</a>]<sub><s><u></u><b></b></s><a name="#AR_22" href="#AR_22">w</a></sub> := <a href="#Generate.m" style="color: #00f;">m</a>;<sub><s><u></u><b></b></s><a name="#AR_23" href="#AR_23">x</a></sub> <a href="#Generate.r" style="color: #00f;">r</a> := <a href="#Base" style="color: #00f;">Base</a>*<a href="#Generate.r" style="color: #00f;">r</a>;<sub><s><u></u><b></b></s><a name="#AR_24" href="#AR_24">y</a></sub> <a href="#Generate.d" style="color: #00f;">d</a>[<a href="#Generate.m" style="color: #00f;">m</a>]<sub><s><u></u><b></b></s><a name="#AR_25" href="#AR_25">z</a></sub> := <a href="#Generate.r" style="color: #00f;">r</a> <span style="color: #f0f;">DIV</span> <a href="#Generate.i" style="color: #00f;">i</a>;<sub><s><u></u><b></b></s><a name="#AR_26" href="#AR_26">a</a></sub> <a href="#Generate.r" style="color: #00f;">r</a> := <a href="#Generate.r" style="color: #00f;">r</a> <span style="color: #f0f;">MOD</span> <a href="#Generate.i" style="color: #00f;">i</a>;<sub><s><u></u><b></b></s><a name="#AR_27" href="#AR_27">b</a></sub> <a href="BUILTINS.html#INC" style="color: #00f;">INC</a>(<a href="#Generate.m" style="color: #00f;">m</a>)</td></tr>
+<tr class="al"><th><a name="A_0038_1" href="#A_0038_1">0038</a></th><td><sup title="579"><a href="#AR_22">w</a></sup>(80E00010):    LDR R0, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_0039_1" href="#A_0039_1">0039</a></th><td><sup title="579"><a href="#AR_22">w</a></sup>(41090020):    SUB R1, R0, 20H</td></tr>
+<tr class="al"><th><a name="A_003A_1" href="#A_003A_1">003A</a></th><td><sup title="579"><a href="#AR_22">w</a></sup>(DA02431C):    BLCC MT [trap=1, pos=579]</td></tr>
+<tr class="al"><th><a name="A_003B_1" href="#A_003B_1">003B</a></th><td><sup title="579"><a href="#AR_22">w</a></sup>(40010002):    LSL R0, R0, 2H</td></tr>
+<tr class="al"><th><a name="A_003C_1" href="#A_003C_1">003C</a></th><td><sup title="579"><a href="#AR_22">w</a></sup>(00E80000):    ADD R0, SP, R0</td></tr>
+<tr class="al"><th><a name="A_003D_1" href="#A_003D_1">003D</a></th><td><sup title="585"><a href="#AR_23">x</a></sup>(81E0000C):    LDR R1, SP, CH</td></tr>
+<tr class="al"><th><a name="A_003E_1" href="#A_003E_1">003E</a></th><td><sup title="585"><a href="#AR_23">x</a></sup>(A1000094):    STR R1, R0, 94H</td></tr>
+<tr class="al"><th><a name="A_003F_1" href="#A_003F_1">003F</a></th><td><sup title="598"><a href="#AR_24">y</a></sup>(80E00010):    LDR R0, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_0040_1" href="#A_0040_1">0040</a></th><td><sup title="598"><a href="#AR_24">y</a></sup>(400A000A):    MUL R0, R0, AH</td></tr>
+<tr class="al"><th><a name="A_0041_1" href="#A_0041_1">0041</a></th><td><sup title="598"><a href="#AR_24">y</a></sup>(A0E00010):    STR R0, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_0042_1" href="#A_0042_1">0042</a></th><td><sup title="603"><a href="#AR_25">z</a></sup>(80E0000C):    LDR R0, SP, CH</td></tr>
+<tr class="al"><th><a name="A_0043_1" href="#A_0043_1">0043</a></th><td><sup title="603"><a href="#AR_25">z</a></sup>(41090020):    SUB R1, R0, 20H</td></tr>
+<tr class="al"><th><a name="A_0044_1" href="#A_0044_1">0044</a></th><td><sup title="603"><a href="#AR_25">z</a></sup>(DA025B1C):    BLCC MT [trap=1, pos=603]</td></tr>
+<tr class="al"><th><a name="A_0045_1" href="#A_0045_1">0045</a></th><td><sup title="603"><a href="#AR_25">z</a></sup>(40010002):    LSL R0, R0, 2H</td></tr>
+<tr class="al"><th><a name="A_0046_1" href="#A_0046_1">0046</a></th><td><sup title="603"><a href="#AR_25">z</a></sup>(00E80000):    ADD R0, SP, R0</td></tr>
+<tr class="al"><th><a name="A_0047_1" href="#A_0047_1">0047</a></th><td><sup title="615"><a href="#AR_26">a</a></sup>(81E00004):    LDR R1, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_0048_1" href="#A_0048_1">0048</a></th><td><sup title="615"><a href="#AR_26">a</a></sup>(D602676C):    BLLE MT [trap=6, pos=615]</td></tr>
+<tr class="al"><th><a name="A_0049_1" href="#A_0049_1">0049</a></th><td><sup title="615"><a href="#AR_26">a</a></sup>(82E00010):    LDR R2, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_004A_1" href="#A_004A_1">004A</a></th><td><sup title="615"><a href="#AR_26">a</a></sup>(012B0001):    DIV R1, R2, R1</td></tr>
+<tr class="al"><th><a name="A_004B_1" href="#A_004B_1">004B</a></th><td><sup title="615"><a href="#AR_26">a</a></sup>(A1000014):    STR R1, R0, 14H</td></tr>
+<tr class="al"><th><a name="A_004C_1" href="#A_004C_1">004C</a></th><td><sup title="629"><a href="#AR_27">b</a></sup>(80E00004):    LDR R0, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_004D_1" href="#A_004D_1">004D</a></th><td><sup title="629"><a href="#AR_27">b</a></sup>(D602756C):    BLLE MT [trap=6, pos=629]</td></tr>
+<tr class="al"><th><a name="A_004E_1" href="#A_004E_1">004E</a></th><td><sup title="629"><a href="#AR_27">b</a></sup>(81E00010):    LDR R1, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_004F_1" href="#A_004F_1">004F</a></th><td><sup title="629"><a href="#AR_27">b</a></sup>(001B0000):    DIV R0, R1, R0</td></tr>
+<tr class="al"><th><a name="A_0050_1" href="#A_0050_1">0050</a></th><td><sup title="629"><a href="#AR_27">b</a></sup>(20000000):    MOV' R0, R0, R0</td></tr>
+<tr class="al"><th><a name="A_0051_1" href="#A_0051_1">0051</a></th><td><sup title="629"><a href="#AR_27">b</a></sup>(A0E00010):    STR R0, SP, 10H</td></tr>
+<tr class="sl"><th><a name="L_20" href="#L_20" data-l="20"></th><td>        <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_28" href="#AR_28">c</a></sub> ;</td></tr>
+<tr class="al"><th><a name="A_0052_1" href="#A_0052_1">0052</a></th><td><sup title="648"><a href="#AR_28">c</a></sup>(80E0000C):    LDR R0, SP, CH</td></tr>
+<tr class="al"><th><a name="A_0053_1" href="#A_0053_1">0053</a></th><td><sup title="648"><a href="#AR_28">c</a></sup>(40080001):    ADD R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0054_1" href="#A_0054_1">0054</a></th><td><sup title="648"><a href="#AR_28">c</a></sup>(A0E0000C):    STR R0, SP, CH</td></tr>
+<tr class="al"><th><a name="A_0055_1" href="#A_0055_1">0055</a></th><td><sup title="648"><a href="#AR_28">c</a></sup>(E7FFFFDB):    B -37 [0031H]</td></tr>
+<tr class="sl"><th><a name="L_21" href="#L_21" data-l="21"></th><td>        <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#WriteInt" style="color: #00f;">WriteInt</a>(<a href="#W" style="color: #00f;">W</a>,<sub><s><u></u><b></b></s><a name="#AR_29" href="#AR_29">d</a></sub> <a href="#Generate.i" style="color: #00f;">i</a>,<sub><s><u></u><b></b></s><a name="#AR_30" href="#AR_30">e</a></sub> <span style="color: #666;">5</span>)<sub><s><u></u><b></b></s><a name="#AR_31" href="#AR_31">f</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_32" href="#AR_32">g</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Write" style="color: #00f;">Write</a>(<a href="#W" style="color: #00f;">W</a>,<sub><s><u></u><b></b></s><a name="#AR_33" href="#AR_33">h</a></sub> <span style="color: #666;">9X</span>)<sub><s><u></u><b></b></s><a name="#AR_34" href="#AR_34">i</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_35" href="#AR_35">j</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Write" style="color: #00f;">Write</a>(<a href="#W" style="color: #00f;">W</a>,<sub><s><u></u><b></b></s><a name="#AR_36" href="#AR_36">k</a></sub> <span style="color: #666;">&quot;.&quot;</span>)<sub><s><u></u><b></b></s><a name="#AR_37" href="#AR_37">l</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_38" href="#AR_38">m</a></sub> <a href="#Generate.j" style="color: #00f;">j</a> := <span style="color: #666;">0</span>;<sub><s><u></u><b></b></s><a name="#AR_39" href="#AR_39">n</a></sub></td></tr>
+<tr class="al"><th><a name="A_0056_1" href="#A_0056_1">0056</a></th><td><sup title="676"><a href="#AR_29">d</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0056_2" href="#A_0056_2">0056</a></th><td><sup title="676"><a href="#AR_29">d</a></sup>(8D000049):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_0057_1" href="#A_0057_1">0057</a></th><td><sup title="676"><a href="#AR_29">d</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_0058_1" href="#A_0058_1">0058</a></th><td><sup title="676"><a href="#AR_29">d</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0058_2" href="#A_0058_2">0058</a></th><td><sup title="676"><a href="#AR_29">d</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0059_1" href="#A_0059_1">0059</a></th><td><sup title="676"><a href="#AR_29">d</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_005A_1" href="#A_005A_1">005A</a></th><td><sup title="679"><a href="#AR_30">e</a></sup>(82E00004):    LDR R2, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_005B_1" href="#A_005B_1">005B</a></th><td><sup title="682"><a href="#AR_31">f</a></sup>(43000005):    MOV R3, R0, 5H</td></tr>
+<tr class="al"><th><a name="A_005C_1" href="#A_005C_1">005C</a></th><td><sup title="683"><a href="#AR_32">g</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_005C_2" href="#A_005C_2">005C</a></th><td><sup title="683"><a href="#AR_32">g</a></sup>(F711E04D):    BL MOD1 [Texts] PROC30</td></tr>
+<tr class="al"><th><a name="A_005D_1" href="#A_005D_1">005D</a></th><td><sup title="698"><a href="#AR_33">h</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_005D_2" href="#A_005D_2">005D</a></th><td><sup title="698"><a href="#AR_33">h</a></sup>(8D000005):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_005E_1" href="#A_005E_1">005E</a></th><td><sup title="698"><a href="#AR_33">h</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_005F_1" href="#A_005F_1">005F</a></th><td><sup title="698"><a href="#AR_33">h</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_005F_2" href="#A_005F_2">005F</a></th><td><sup title="698"><a href="#AR_33">h</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0060_1" href="#A_0060_1">0060</a></th><td><sup title="698"><a href="#AR_33">h</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_0061_1" href="#A_0061_1">0061</a></th><td><sup title="702"><a href="#AR_34">i</a></sup>(42000009):    MOV R2, R0, 9H</td></tr>
+<tr class="al"><th><a name="A_0062_1" href="#A_0062_1">0062</a></th><td><sup title="703"><a href="#AR_35">j</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_0062_2" href="#A_0062_2">0062</a></th><td><sup title="703"><a href="#AR_35">j</a></sup>(F711B006):    BL MOD1 [Texts] PROC27</td></tr>
+<tr class="al"><th><a name="A_0063_1" href="#A_0063_1">0063</a></th><td><sup title="718"><a href="#AR_36">k</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0063_2" href="#A_0063_2">0063</a></th><td><sup title="718"><a href="#AR_36">k</a></sup>(8D000004):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_0064_1" href="#A_0064_1">0064</a></th><td><sup title="718"><a href="#AR_36">k</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_0065_1" href="#A_0065_1">0065</a></th><td><sup title="718"><a href="#AR_36">k</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0065_2" href="#A_0065_2">0065</a></th><td><sup title="718"><a href="#AR_36">k</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0066_1" href="#A_0066_1">0066</a></th><td><sup title="718"><a href="#AR_36">k</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_0067_1" href="#A_0067_1">0067</a></th><td><sup title="723"><a href="#AR_37">l</a></sup>(4200002E):    MOV R2, R0, 2EH</td></tr>
+<tr class="al"><th><a name="A_0068_1" href="#A_0068_1">0068</a></th><td><sup title="724"><a href="#AR_38">m</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_0068_2" href="#A_0068_2">0068</a></th><td><sup title="724"><a href="#AR_38">m</a></sup>(F711B006):    BL MOD1 [Texts] PROC27</td></tr>
+<tr class="al"><th><a name="A_0069_1" href="#A_0069_1">0069</a></th><td><sup title="732"><a href="#AR_39">n</a></sup>(40000000):    MOV R0, R0, 0H</td></tr>
+<tr class="al"><th><a name="A_006A_1" href="#A_006A_1">006A</a></th><td><sup title="732"><a href="#AR_39">n</a></sup>(A0E00008):    STR R0, SP, 8H</td></tr>
+<tr class="sl"><th><a name="L_22" href="#L_22" data-l="22"></th><td>        <span style="color: #f0f;">WHILE</span> <a href="#Generate.j" style="color: #00f;">j</a> &lt; <a href="#Generate.x" style="color: #00f;">x</a>[<a href="#Generate.r" style="color: #00f;">r</a>]<sub><s><u></u><b></b></s><a name="#AR_40" href="#AR_40">o</a></sub> <span style="color: #f0f;">DO</span><sub><s><u></u><b></b></s><a name="#AR_41" href="#AR_41">p</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Write" style="color: #00f;">Write</a>(<a href="#W" style="color: #00f;">W</a>,<sub><s><u></u><b></b></s><a name="#AR_42" href="#AR_42">q</a></sub> <a href="BUILTINS.html#CHR" style="color: #00f;">CHR</a>(<a href="#Generate.d" style="color: #00f;">d</a>[<a href="#Generate.j" style="color: #00f;">j</a>]<sub><s><u></u><b></b></s><a name="#AR_43" href="#AR_43">r</a></sub> + <span style="color: #666;">48</span>)<sub><s><u></u><b></b></s><a name="#AR_44" href="#AR_44">s</a></sub>);<sub><s><u></u><b></b></s><a name="#AR_45" href="#AR_45">t</a></sub> <a href="BUILTINS.html#INC" style="color: #00f;">INC</a>(<a href="#Generate.j" style="color: #00f;">j</a>) <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_46" href="#AR_46">u</a></sub> ;</td></tr>
+<tr class="al"><th><a name="A_006B_1" href="#A_006B_1">006B</a></th><td><sup title="755"><a href="#AR_40">o</a></sup>(80E00010):    LDR R0, SP, 10H</td></tr>
+<tr class="al"><th><a name="A_006C_1" href="#A_006C_1">006C</a></th><td><sup title="755"><a href="#AR_40">o</a></sup>(41090020):    SUB R1, R0, 20H</td></tr>
+<tr class="al"><th><a name="A_006D_1" href="#A_006D_1">006D</a></th><td><sup title="755"><a href="#AR_40">o</a></sup>(DA02F31C):    BLCC MT [trap=1, pos=755]</td></tr>
+<tr class="al"><th><a name="A_006E_1" href="#A_006E_1">006E</a></th><td><sup title="755"><a href="#AR_40">o</a></sup>(40010002):    LSL R0, R0, 2H</td></tr>
+<tr class="al"><th><a name="A_006F_1" href="#A_006F_1">006F</a></th><td><sup title="755"><a href="#AR_40">o</a></sup>(00E80000):    ADD R0, SP, R0</td></tr>
+<tr class="al"><th><a name="A_0070_1" href="#A_0070_1">0070</a></th><td><sup title="758"><a href="#AR_41">p</a></sup>(81E00008):    LDR R1, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_0071_1" href="#A_0071_1">0071</a></th><td><sup title="758"><a href="#AR_41">p</a></sup>(80000094):    LDR R0, R0, 94H</td></tr>
+<tr class="al"><th><a name="A_0072_1" href="#A_0072_1">0072</a></th><td><sup title="758"><a href="#AR_41">p</a></sup>(01190000):    SUB R1, R1, R0</td></tr>
+<tr class="al"><th><a name="A_0073_1" href="#A_0073_1">0073</a></th><td><sup title="758"><a href="#AR_41">p</a></sup>(ED000010):    BGE 16 [0084H]</td></tr>
+<tr class="al"><th><a name="A_0074_1" href="#A_0074_1">0074</a></th><td><sup title="773"><a href="#AR_42">q</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0074_2" href="#A_0074_2">0074</a></th><td><sup title="773"><a href="#AR_42">q</a></sup>(8D00000F):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_0075_1" href="#A_0075_1">0075</a></th><td><sup title="773"><a href="#AR_42">q</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_0076_1" href="#A_0076_1">0076</a></th><td><sup title="773"><a href="#AR_42">q</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0076_2" href="#A_0076_2">0076</a></th><td><sup title="773"><a href="#AR_42">q</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0077_1" href="#A_0077_1">0077</a></th><td><sup title="773"><a href="#AR_42">q</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_0078_1" href="#A_0078_1">0078</a></th><td><sup title="782"><a href="#AR_43">r</a></sup>(82E00008):    LDR R2, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_0079_1" href="#A_0079_1">0079</a></th><td><sup title="782"><a href="#AR_43">r</a></sup>(43290020):    SUB R3, R2, 20H</td></tr>
+<tr class="al"><th><a name="A_007A_1" href="#A_007A_1">007A</a></th><td><sup title="782"><a href="#AR_43">r</a></sup>(DA030E1C):    BLCC MT [trap=1, pos=782]</td></tr>
+<tr class="al"><th><a name="A_007B_1" href="#A_007B_1">007B</a></th><td><sup title="782"><a href="#AR_43">r</a></sup>(42210002):    LSL R2, R2, 2H</td></tr>
+<tr class="al"><th><a name="A_007C_1" href="#A_007C_1">007C</a></th><td><sup title="782"><a href="#AR_43">r</a></sup>(02E80002):    ADD R2, SP, R2</td></tr>
+<tr class="al"><th><a name="A_007D_1" href="#A_007D_1">007D</a></th><td><sup title="788"><a href="#AR_44">s</a></sup>(82200014):    LDR R2, R2, 14H</td></tr>
+<tr class="al"><th><a name="A_007E_1" href="#A_007E_1">007E</a></th><td><sup title="788"><a href="#AR_44">s</a></sup>(42280030):    ADD R2, R2, 30H</td></tr>
+<tr class="al"><th><a name="A_007F_1" href="#A_007F_1">007F</a></th><td><sup title="790"><a href="#AR_45">t</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_007F_2" href="#A_007F_2">007F</a></th><td><sup title="790"><a href="#AR_45">t</a></sup>(F711B017):    BL MOD1 [Texts] PROC27</td></tr>
+<tr class="al"><th><a name="A_0080_1" href="#A_0080_1">0080</a></th><td><sup title="801"><a href="#AR_46">u</a></sup>(80E00008):    LDR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_0081_1" href="#A_0081_1">0081</a></th><td><sup title="801"><a href="#AR_46">u</a></sup>(40080001):    ADD R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_0082_1" href="#A_0082_1">0082</a></th><td><sup title="801"><a href="#AR_46">u</a></sup>(A0E00008):    STR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_0083_1" href="#A_0083_1">0083</a></th><td><sup title="801"><a href="#AR_46">u</a></sup>(E7FFFFE7):    B -25 [006BH]</td></tr>
+<tr class="sl"><th><a name="L_23" href="#L_23" data-l="23"></th><td>        <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Write" style="color: #00f;">Write</a>(<a href="#W" style="color: #00f;">W</a>,<sub><s><u></u><b></b></s><a name="#AR_47" href="#AR_47">v</a></sub> <span style="color: #666;">&quot;'&quot;</span>)<sub><s><u></u><b></b></s><a name="#AR_48" href="#AR_48">w</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_49" href="#AR_49">x</a></sub></td></tr>
+<tr class="al"><th><a name="A_0084_1" href="#A_0084_1">0084</a></th><td><sup title="826"><a href="#AR_47">v</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0084_2" href="#A_0084_2">0084</a></th><td><sup title="826"><a href="#AR_47">v</a></sup>(8D00000E):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_0085_1" href="#A_0085_1">0085</a></th><td><sup title="826"><a href="#AR_47">v</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_0086_1" href="#A_0086_1">0086</a></th><td><sup title="826"><a href="#AR_47">v</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0086_2" href="#A_0086_2">0086</a></th><td><sup title="826"><a href="#AR_47">v</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0087_1" href="#A_0087_1">0087</a></th><td><sup title="826"><a href="#AR_47">v</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_0088_1" href="#A_0088_1">0088</a></th><td><sup title="831"><a href="#AR_48">w</a></sup>(42000027):    MOV R2, R0, 27H</td></tr>
+<tr class="al"><th><a name="A_0089_1" href="#A_0089_1">0089</a></th><td><sup title="832"><a href="#AR_49">x</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_0089_2" href="#A_0089_2">0089</a></th><td><sup title="832"><a href="#AR_49">x</a></sup>(F711B00A):    BL MOD1 [Texts] PROC27</td></tr>
+<tr class="sl"><th><a name="L_24" href="#L_24" data-l="24"></th><td>        <span style="color: #f0f;">WHILE</span> <a href="#Generate.j" style="color: #00f;">j</a> &lt; <a href="#Generate.m" style="color: #00f;">m</a> <span style="color: #f0f;">DO</span><sub><s><u></u><b></b></s><a name="#AR_50" href="#AR_50">y</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Write" style="color: #00f;">Write</a>(<a href="#W" style="color: #00f;">W</a>,<sub><s><u></u><b></b></s><a name="#AR_51" href="#AR_51">z</a></sub> <a href="BUILTINS.html#CHR" style="color: #00f;">CHR</a>(<a href="#Generate.d" style="color: #00f;">d</a>[<a href="#Generate.j" style="color: #00f;">j</a>]<sub><s><u></u><b></b></s><a name="#AR_52" href="#AR_52">a</a></sub> + <span style="color: #666;">48</span>)<sub><s><u></u><b></b></s><a name="#AR_53" href="#AR_53">b</a></sub>);<sub><s><u></u><b></b></s><a name="#AR_54" href="#AR_54">c</a></sub> <a href="BUILTINS.html#INC" style="color: #00f;">INC</a>(<a href="#Generate.j" style="color: #00f;">j</a>) <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_55" href="#AR_55">d</a></sub> ;</td></tr>
+<tr class="al"><th><a name="A_008A_1" href="#A_008A_1">008A</a></th><td><sup title="855"><a href="#AR_50">y</a></sup>(80E00008):    LDR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_008B_1" href="#A_008B_1">008B</a></th><td><sup title="855"><a href="#AR_50">y</a></sup>(81E0000C):    LDR R1, SP, CH</td></tr>
+<tr class="al"><th><a name="A_008C_1" href="#A_008C_1">008C</a></th><td><sup title="855"><a href="#AR_50">y</a></sup>(00090001):    SUB R0, R0, R1</td></tr>
+<tr class="al"><th><a name="A_008D_1" href="#A_008D_1">008D</a></th><td><sup title="855"><a href="#AR_50">y</a></sup>(ED000010):    BGE 16 [009EH]</td></tr>
+<tr class="al"><th><a name="A_008E_1" href="#A_008E_1">008E</a></th><td><sup title="870"><a href="#AR_51">z</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_008E_2" href="#A_008E_2">008E</a></th><td><sup title="870"><a href="#AR_51">z</a></sup>(8D000008):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_008F_1" href="#A_008F_1">008F</a></th><td><sup title="870"><a href="#AR_51">z</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_0090_1" href="#A_0090_1">0090</a></th><td><sup title="870"><a href="#AR_51">z</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_0090_2" href="#A_0090_2">0090</a></th><td><sup title="870"><a href="#AR_51">z</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_0091_1" href="#A_0091_1">0091</a></th><td><sup title="870"><a href="#AR_51">z</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_0092_1" href="#A_0092_1">0092</a></th><td><sup title="879"><a href="#AR_52">a</a></sup>(82E00008):    LDR R2, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_0093_1" href="#A_0093_1">0093</a></th><td><sup title="879"><a href="#AR_52">a</a></sup>(43290020):    SUB R3, R2, 20H</td></tr>
+<tr class="al"><th><a name="A_0094_1" href="#A_0094_1">0094</a></th><td><sup title="879"><a href="#AR_52">a</a></sup>(DA036F1C):    BLCC MT [trap=1, pos=879]</td></tr>
+<tr class="al"><th><a name="A_0095_1" href="#A_0095_1">0095</a></th><td><sup title="879"><a href="#AR_52">a</a></sup>(42210002):    LSL R2, R2, 2H</td></tr>
+<tr class="al"><th><a name="A_0096_1" href="#A_0096_1">0096</a></th><td><sup title="879"><a href="#AR_52">a</a></sup>(02E80002):    ADD R2, SP, R2</td></tr>
+<tr class="al"><th><a name="A_0097_1" href="#A_0097_1">0097</a></th><td><sup title="885"><a href="#AR_53">b</a></sup>(82200014):    LDR R2, R2, 14H</td></tr>
+<tr class="al"><th><a name="A_0098_1" href="#A_0098_1">0098</a></th><td><sup title="885"><a href="#AR_53">b</a></sup>(42280030):    ADD R2, R2, 30H</td></tr>
+<tr class="al"><th><a name="A_0099_1" href="#A_0099_1">0099</a></th><td><sup title="887"><a href="#AR_54">c</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_0099_2" href="#A_0099_2">0099</a></th><td><sup title="887"><a href="#AR_54">c</a></sup>(F711B010):    BL MOD1 [Texts] PROC27</td></tr>
+<tr class="al"><th><a name="A_009A_1" href="#A_009A_1">009A</a></th><td><sup title="898"><a href="#AR_55">d</a></sup>(80E00008):    LDR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_009B_1" href="#A_009B_1">009B</a></th><td><sup title="898"><a href="#AR_55">d</a></sup>(40080001):    ADD R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_009C_1" href="#A_009C_1">009C</a></th><td><sup title="898"><a href="#AR_55">d</a></sup>(A0E00008):    STR R0, SP, 8H</td></tr>
+<tr class="al"><th><a name="A_009D_1" href="#A_009D_1">009D</a></th><td><sup title="898"><a href="#AR_55">d</a></sup>(E7FFFFEC):    B -20 [008AH]</td></tr>
+<tr class="sl"><th><a name="L_25" href="#L_25" data-l="25"></th><td>        <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#WriteLn" style="color: #00f;">WriteLn</a>(<a href="#W" style="color: #00f;">W</a>)<sub><s><u></u><b></b></s><a name="#AR_56" href="#AR_56">e</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_57" href="#AR_57">f</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#Append" style="color: #00f;">Append</a>(<a href="#Oberon" style="color: #00f;">Oberon</a>.<a href="Oberon.html#Log" style="color: #00f;">Log</a>,<sub><s><u></u><b></b></s><a name="#AR_58" href="#AR_58">g</a></sub> <a href="#W" style="color: #00f;">W</a>.<a href="Texts.html#Writer.buf" style="color: #00f;">buf</a>)<sub><s><u></u><b></b></s><a name="#AR_59" href="#AR_59">h</a></sub>;<sub><s><u></u><b></b></s><a name="#AR_60" href="#AR_60">i</a></sub> <a href="BUILTINS.html#INC" style="color: #00f;">INC</a>(<a href="#Generate.i" style="color: #00f;">i</a>)</td></tr>
+<tr class="al"><th><a name="A_009E_1" href="#A_009E_1">009E</a></th><td><sup title="925"><a href="#AR_56">e</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_009E_2" href="#A_009E_2">009E</a></th><td><sup title="925"><a href="#AR_56">e</a></sup>(8D00000E):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_009F_1" href="#A_009F_1">009F</a></th><td><sup title="925"><a href="#AR_56">e</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_00A0_1" href="#A_00A0_1">00A0</a></th><td><sup title="925"><a href="#AR_56">e</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_00A0_2" href="#A_00A0_2">00A0</a></th><td><sup title="925"><a href="#AR_56">e</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_00A1_1" href="#A_00A1_1">00A1</a></th><td><sup title="925"><a href="#AR_56">e</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="al"><th><a name="A_00A2_1" href="#A_00A2_1">00A2</a></th><td><sup title="926"><a href="#AR_57">f</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_00A2_2" href="#A_00A2_2">00A2</a></th><td><sup title="926"><a href="#AR_57">f</a></sup>(F711C009):    BL MOD1 [Texts] PROC28</td></tr>
+<tr class="al"><th><a name="A_00A3_1" href="#A_00A3_1">00A3</a></th><td><sup title="951"><a href="#AR_58">g</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_00A3_2" href="#A_00A3_2">00A3</a></th><td><sup title="951"><a href="#AR_58">g</a></sup>(8D400003):    LDR SB, MT, MOD4 [Oberon]</td></tr>
+<tr class="al"><th><a name="A_00A4_1" href="#A_00A4_1">00A4</a></th><td><sup title="951"><a href="#AR_58">g</a></sup>(80D0000D):    LDR R0, SB, VAR13</td></tr>
+<tr class="al"><th><a name="A_00A5_1" href="#A_00A5_1">00A5</a></th><td><sup title="958"><a href="#AR_59">h</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_00A5_2" href="#A_00A5_2">00A5</a></th><td><sup title="958"><a href="#AR_59">h</a></sup>(8D000002):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_00A6_1" href="#A_00A6_1">00A6</a></th><td><sup title="958"><a href="#AR_59">h</a></sup>(81D00000):    LDR R1, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_00A7_1" href="#A_00A7_1">00A7</a></th><td><sup title="959"><a href="#AR_60">i</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_00A7_2" href="#A_00A7_2">00A7</a></th><td><sup title="959"><a href="#AR_60">i</a></sup>(F710E005):    BL MOD1 [Texts] PROC14</td></tr>
+<tr class="sl"><th><a name="L_26" href="#L_26" data-l="26"></th><td>      <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_61" href="#AR_61">j</a></sub></td></tr>
+<tr class="al"><th><a name="A_00A8_1" href="#A_00A8_1">00A8</a></th><td><sup title="976"><a href="#AR_61">j</a></sup>(80E00004):    LDR R0, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_00A9_1" href="#A_00A9_1">00A9</a></th><td><sup title="976"><a href="#AR_61">j</a></sup>(40080001):    ADD R0, R0, 1H</td></tr>
+<tr class="al"><th><a name="A_00AA_1" href="#A_00AA_1">00AA</a></th><td><sup title="976"><a href="#AR_61">j</a></sup>(A0E00004):    STR R0, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_00AB_1" href="#A_00AB_1">00AB</a></th><td><sup title="976"><a href="#AR_61">j</a></sup>(E7FFFF6C):    B -148 [0018H]</td></tr>
+<tr class="sl"><th><a name="L_27" href="#L_27" data-l="27"></th><td>    <span style="color: #f0f;">END</span></td></tr>
+<tr class="sl"><th><a name="L_28" href="#L_28" data-l="28"></th><td>  <span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_62" href="#AR_62">k</a></sub> <a href="#Generate" style="color: #00f;">Generate</a>;</td></tr>
+<tr class="al"><th><a name="A_00AC_1" href="#A_00AC_1">00AC</a></th><td><sup title="990"><a href="#AR_62">k</a></sup>(8FE00000):    LDR LNK, SP, 0H</td></tr>
+<tr class="al"><th><a name="A_00AD_1" href="#A_00AD_1">00AD</a></th><td><sup title="990"><a href="#AR_62">k</a></sup>(4EE80188):    ADD SP, SP, 188H</td></tr>
+<tr class="al"><th><a name="A_00AE_1" href="#A_00AE_1">00AE</a></th><td><sup title="990"><a href="#AR_62">k</a></sup>(C700000F):    B LNK</td></tr>
+<tr class="sl"><th><a name="L_29" href="#L_29" data-l="29"></th><td></td></tr>
+<tr class="sl"><th><a name="L_30" href="#L_30" data-l="30"></th><td><span style="color: #f0f;">BEGIN</span><sub><s><u></u><b></b></s><a name="#AR_63" href="#AR_63">l</a></sub> <a href="#Texts" style="color: #00f;">Texts</a>.<a href="Texts.html#OpenWriter" style="color: #00f;">OpenWriter</a>(<a href="#W" style="color: #00f;">W</a>)<sub><s><u></u><b></b></s><a name="#AR_64" href="#AR_64">m</a></sub></td></tr>
+<tr class="al"><th><a name="A_00AF_1" href="#A_00AF_1">00AF</a></th><td><sup title="1007"><a href="#AR_63">l</a></sup>               .PROC 0</td></tr>
+<tr class="al"><th><a name="A_00AF_2" href="#A_00AF_2">00AF</a></th><td><sup title="1007"><a href="#AR_63">l</a></sup>               .ENTRYPOINT</td></tr>
+<tr class="al"><th><a name="A_00AF_3" href="#A_00AF_3">00AF</a></th><td><sup title="1007"><a href="#AR_63">l</a></sup>(4EE90004):    SUB SP, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_00B0_1" href="#A_00B0_1">00B0</a></th><td><sup title="1007"><a href="#AR_63">l</a></sup>(AFE00000):    STR LNK, SP, 0H</td></tr>
+<tr class="al"><th><a name="A_00B1_1" href="#A_00B1_1">00B1</a></th><td><sup title="1027"><a href="#AR_64">m</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_00B1_2" href="#A_00B1_2">00B1</a></th><td><sup title="1027"><a href="#AR_64">m</a></sup>(8D00000C):    LDR SB, MT, MOD0 [Fractions]</td></tr>
+<tr class="al"><th><a name="A_00B2_1" href="#A_00B2_1">00B2</a></th><td><sup title="1027"><a href="#AR_64">m</a></sup>(40D80000):    ADD R0, SB, 0H [data]</td></tr>
+<tr class="al"><th><a name="A_00B3_1" href="#A_00B3_1">00B3</a></th><td><sup title="1027"><a href="#AR_64">m</a></sup>               .FIXUP D</td></tr>
+<tr class="al"><th><a name="A_00B3_2" href="#A_00B3_2">00B3</a></th><td><sup title="1027"><a href="#AR_64">m</a></sup>(8D100002):    LDR SB, MT, MOD1 [Texts]</td></tr>
+<tr class="al"><th><a name="A_00B4_1" href="#A_00B4_1">00B4</a></th><td><sup title="1027"><a href="#AR_64">m</a></sup>(41D80005):    ADD R1, SB, VAR5</td></tr>
+<tr class="sl"><th><a name="L_31" href="#L_31" data-l="31"></th><td><span style="color: #f0f;">END</span><sub><s><u></u><b></b></s><a name="#AR_65" href="#AR_65">n</a></sub> <a href="#MODULE" style="color: #00f;">Fractions</a>.<sub><s><u></u><b></b></s><a name="#AR_66" href="#AR_66">o</a></sub></td></tr>
+<tr class="al"><th><a name="A_00B5_1" href="#A_00B5_1">00B5</a></th><td><sup title="1031"><a href="#AR_65">n</a></sup>               .FIXUP P</td></tr>
+<tr class="al"><th><a name="A_00B5_2" href="#A_00B5_2">00B5</a></th><td><sup title="1031"><a href="#AR_65">n</a></sup>(F711700E):    BL MOD1 [Texts] PROC23</td></tr>
+<tr class="al"><th><a name="A_00B6_1" href="#A_00B6_1">00B6</a></th><td><sup title="1042"><a href="#AR_66">o</a></sup>(8FE00000):    LDR LNK, SP, 0H</td></tr>
+<tr class="al"><th><a name="A_00B7_1" href="#A_00B7_1">00B7</a></th><td><sup title="1042"><a href="#AR_66">o</a></sup>(4EE80004):    ADD SP, SP, 4H</td></tr>
+<tr class="al"><th><a name="A_00B8_1" href="#A_00B8_1">00B8</a></th><td><sup title="1042"><a href="#AR_66">o</a></sup>(C700000F):    B LNK</td></tr>
+</table></body></html>
