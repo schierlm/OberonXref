@@ -1,0 +1,1825 @@
+--- 1/Blink.Mod.txt
++++ 2/Blink.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE Blink;   (*NW 30.5.2013*)
+-  IMPORT SYSTEM, Oberon;
++  IMPORT Oberon;
+   VAR z: INTEGER;
+     T: Oberon.Task;
+   
+--- 1/BootLoad.Mod.txt
++++ 2/BootLoad.Mod.txt
+@@ -3,7 +3,7 @@
+   (* sw0: init SD; sw1: line|disk*)
+   CONST MT = 12; SP = 14; LNK = 15;
+     MTOrg = 20H; MemLim = 0E7EF0H; stackOrg = 80000H;
+-    swi = -60; led = -60; rsData = -56; rsCtrl = -52;
++    swi = -60; rsData = -56; rsCtrl = -52;
+     spiData = -48; spiCtrl = -44;
+     CARD0 = 1; SPIFAST = 4;
+     FSoffset = 80000H;   (*block offset*)
+--- 1/Curves.Mod.txt
++++ 2/Curves.Mod.txt
+@@ -2,15 +2,15 @@
+   IMPORT Display, Files, Oberon, Graphics, GraphicFrames;
+ 
+   TYPE
+-    Curve* = POINTER TO CurveDesc;
++    Curve = POINTER TO CurveDesc;
+ 
+-    CurveDesc* = RECORD (Graphics.ObjectDesc)
+-        kind*, lw*: INTEGER
++    CurveDesc = RECORD (Graphics.ObjectDesc)
++        kind, lw: INTEGER
+       END ;
+ 
+   (*kind: 0 = up-line, 1 = down-line, 2 = circle, 3 = ellipse*)
+ 
+-  VAR method*: Graphics.Method;
++  VAR method: Graphics.Method;
+ 
+   PROCEDURE Dot(f: GraphicFrames.Frame; col, x, y: INTEGER);
+   BEGIN
+--- 1/Display.Mod.txt
++++ 2/Display.Mod.txt
+@@ -13,15 +13,10 @@
+         handle*: Handler
+       END ;
+ 
+-  VAR Base*, Width*, Height*: INTEGER;
++  VAR Width*, Height*: INTEGER;
+     arrow*, star*, hook*, updown*, block*, cross*, grey*: INTEGER;
+     (*a pattern is an array of bytes; the first is its width (< 32), the second its height, the rest the raster*)
+ 
+-  PROCEDURE Handle*(F: Frame; VAR M: FrameMsg);
+-  BEGIN
+-    IF (F # NIL) & (F.handle # NIL) THEN F.handle(F, M) END
+-  END Handle;
+-
+   (* raster ops *)
+     
+   PROCEDURE Dot*(col, x, y, mode: INTEGER);
+@@ -179,7 +174,7 @@
+     END
+   END ReplPattern;
+ 
+-BEGIN Base := base; Width := 1024; Height := 768;
++BEGIN Width := 1024; Height := 768;
+   arrow := SYSTEM.ADR($0F0F 0060 0070 0038 001C 000E 0007 8003 C101 E300 7700 3F00 1F00 3F00 7F00 FF00$);
+   star := SYSTEM.ADR($0F0F 8000 8220 8410 8808 9004 A002 C001 7F7F C001 A002 9004 8808 8410 8220 8000$);
+   hook := SYSTEM.ADR($0C0C 070F 8707 C703 E701 F700 7F00 3F00 1F00 0F00 0700 0300 01$);
+--- 1/Edit.Mod.txt
++++ 2/Edit.Mod.txt
+@@ -1,7 +1,7 @@
+ MODULE Edit; (*JG 2.11.90 / NW 28.11.2015*)
+   IMPORT Files, Fonts, Texts, Display, Viewers, Oberon, MenuViewers, TextFrames;
+ 
+-  CONST CR = 0DX; maxlen = 32;
++  CONST maxlen = 32;
+     StandardMenu = "System.Close System.Copy System.Grow Edit.Search Edit.Store";
+ 
+   VAR W: Texts.Writer;
+@@ -75,14 +75,14 @@
+       F: TextFrames.Frame;
+       v: Viewers.Viewer;
+       beg, end, time: LONGINT;
+-      fnt: Fonts.Font; col, voff: INTEGER;
++      fnt: Fonts.Font; col: INTEGER;
+   BEGIN Oberon.GetSelection(T, beg, end, time);
+     IF time >= 0 THEN
+       v := Oberon.FocusViewer;
+       IF (v # NIL) & (v.dsc # NIL) & (v.dsc.next IS TextFrames.Frame) THEN
+         F := v.dsc.next(TextFrames.Frame);
+-        Texts.Attributes(F.text, F.carloc.pos, fnt, col, voff);
+-        Texts.ChangeLooks(T, beg, end, {0,1,2}, fnt, col, voff)
++        Texts.Attributes(F.text, F.carloc.pos, fnt, col);
++        Texts.ChangeLooks(T, beg, end, {0,1,2}, fnt, col)
+       END
+     END
+   END CopyLooks; 
+@@ -94,7 +94,7 @@
+     IF time >= 0 THEN
+       Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
+       IF S.class = Texts.Name THEN
+-        Texts.ChangeLooks(T, beg, end, {0}, Fonts.This(S.s), 0, 0)
++        Texts.ChangeLooks(T, beg, end, {0}, Fonts.This(S.s), 0)
+       END
+     END
+   END ChangeFont;
+@@ -107,21 +107,9 @@
+   BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
+     IF S.class = Texts.Int THEN
+       col := S.i; Oberon.GetSelection(T, beg, end, time);
+-      IF time >= 0 THEN Texts.ChangeLooks(T, beg, end, {1}, NIL, col, 0) END
++      IF time >= 0 THEN Texts.ChangeLooks(T, beg, end, {1}, NIL, col) END
+     END
+   END ChangeColor;
+-
+-  PROCEDURE ChangeOffset*;
+-    VAR S: Texts.Scanner;
+-      T: Texts.Text;
+-      voff: INTEGER; ch: CHAR;
+-      beg, end, time: LONGINT;
+-  BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
+-    IF S.class = Texts.Int THEN
+-      voff := S.i; Oberon.GetSelection(T, beg, end, time);
+-      IF time >= 0 THEN Texts.ChangeLooks(T, beg, end, {2}, NIL, voff, 0) END
+-    END
+-  END ChangeOffset;
+ 
+   PROCEDURE Search*;  (*uses global variables M, pat, d for Boyer-Moore search*)
+     VAR Text: TextFrames.Frame;
+--- 1/FileDir.Mod.txt
++++ 2/FileDir.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE FileDir;   (*NW 12.1.86 / 23.8.90 / 15.8.2013*)
+-  IMPORT SYSTEM, Kernel;
++  IMPORT Kernel;
+ 
+   (*File Directory is a B-tree with its root page at DirRootAdr.
+     Each entry contains a file name and the disk address of the file's head sector*)
+@@ -10,10 +10,10 @@
+         SectorSize*   = 1024;
+         IndexSize*   = SectorSize DIV 4;
+         HeaderSize*  = 352;
+-        DirRootAdr*  = 29;
+-        DirPgSize*   = 24;
++        DirRootAdr  = 29;
++        DirPgSize   = 24;
+         N = DirPgSize DIV 2;
+-        DirMark*    = 9B1EA38DH;
++        DirMark    = 9B1EA38DH;
+         HeaderMark* = 9BA71D86H;
+         FillerSize = 52;
+ 
+@@ -21,7 +21,7 @@
+     FileName*       = ARRAY FnLength OF CHAR;
+     SectorTable*    = ARRAY SecTabSize OF DiskAdr;
+     ExtensionTable* = ARRAY ExTabSize OF DiskAdr;
+-    EntryHandler*   = PROCEDURE (name: FileName; sec: DiskAdr; VAR continue: BOOLEAN);
++    EntryHandler   = PROCEDURE (name: FileName; sec: DiskAdr; VAR continue: BOOLEAN);
+ 
+     FileHeader* =
+       RECORD (*first page of each file on disk*)
+@@ -37,19 +37,19 @@
+     IndexSector* = ARRAY IndexSize OF DiskAdr;
+     DataSector* = ARRAY SectorSize OF BYTE;
+ 
+-    DirEntry* =  (*B-tree node*)
++    DirEntry =  (*B-tree node*)
+       RECORD
+-        name*: FileName;
+-        adr*:  DiskAdr; (*sec no of file header*)
+-        p*:    DiskAdr  (*sec no of descendant in directory*)
++        name: FileName;
++        adr:  DiskAdr; (*sec no of file header*)
++        p:    DiskAdr  (*sec no of descendant in directory*)
+       END ;
+ 
+-    DirPage*  =
+-      RECORD mark*:  INTEGER;
+-        m*:     INTEGER;
+-        p0*:    DiskAdr;  (*sec no of left descendant in directory*)
++    DirPage  =
++      RECORD mark:  INTEGER;
++        m:     INTEGER;
++        p0:    DiskAdr;  (*sec no of left descendant in directory*)
+         fill:  ARRAY FillerSize OF BYTE;
+-        e*:  ARRAY DirPgSize OF DirEntry
++        e:  ARRAY DirPgSize OF DirEntry
+       END ;
+ 
+   (*Exported procedures: Search, Insert, Delete, Enumerate, Init*)
+--- 1/Files.Mod.txt
++++ 2/Files.Mod.txt
+@@ -19,7 +19,6 @@
+ 
+     Rider* =
+       RECORD eof*: BOOLEAN;
+-        res*: INTEGER;
+         file: File;
+         apos, bpos: INTEGER;
+         buf: Buffer
+@@ -238,28 +237,6 @@
+     END
+   END Register;
+ 
+-  PROCEDURE Close*(f: File);
+-  BEGIN
+-    IF f # NIL THEN Unbuffer(f) END
+-  END Close;
+-
+-  PROCEDURE Purge*(f: File);
+-    VAR a, i, j, k: INTEGER;
+-      ind: FileDir.IndexSector;
+-  BEGIN
+-    IF f # NIL THEN a := f.aleng + 1; f.aleng := 0; f.bleng := HS;
+-      IF a <= STS THEN i := a;
+-      ELSE i := STS; DEC(a, i); j := (a-1) MOD XS; k := (a-1) DIV XS;
+-        WHILE k >= 0 DO
+-          Kernel.GetSector(f.ext[k].adr, ind);
+-          REPEAT DEC(j); Kernel.FreeSector(ind[j]) UNTIL j = 0;
+-          Kernel.FreeSector(f.ext[k].adr); j := XS; DEC(k)
+-        END
+-      END ;
+-      REPEAT DEC(i); Kernel.FreeSector(f.sec[i]) UNTIL i = 0
+-    END
+-  END Purge;
+-
+   PROCEDURE Delete*(name: ARRAY OF CHAR; VAR res: INTEGER);
+     VAR adr: DiskAdr;
+         namebuf: FileDir.FileName;
+@@ -292,15 +269,11 @@
+   BEGIN RETURN f.aleng * SS + f.bleng - HS
+   END Length;
+ 
+-  PROCEDURE Date*(f: File): INTEGER;
+-  BEGIN RETURN f.date
+-  END Date;
+-
+   (*---------------------------Read---------------------------*)
+ 
+   PROCEDURE Set*(VAR r: Rider; f: File; pos: INTEGER);
+     VAR a, b: INTEGER;
+-  BEGIN  r.eof := FALSE; r.res := 0;
++  BEGIN  r.eof := FALSE;
+     IF f # NIL THEN
+       IF pos < 0 THEN a := 0; b := HS
+       ELSIF pos < f.aleng * SS + f.bleng - HS THEN
+@@ -337,12 +310,6 @@
+     END
+   END ReadByte;
+ 
+-  PROCEDURE ReadBytes*(VAR r: Rider; VAR x: ARRAY OF BYTE; n: INTEGER);
+-    VAR i: INTEGER;
+-  BEGIN i := 0;  (*this implementation is to be improved*)
+-    WHILE i < n DO ReadByte(r, x[i]); INC(i) END
+-  END ReadBytes;
+-
+   PROCEDURE Read*(VAR r: Rider; VAR ch: CHAR);
+     VAR buf: Buffer;  (*same as ReadByte*)
+   BEGIN
+@@ -366,16 +333,6 @@
+     x := ((x3 * 100H + x2) * 100H + x1) * 100H + x0
+   END ReadInt;
+ 
+-  PROCEDURE ReadSet*(VAR R: Rider; VAR s: SET);
+-    VAR n: INTEGER;
+-  BEGIN ReadInt(R, SYSTEM.VAL(INTEGER, s))
+-  END ReadSet;
+-
+-  PROCEDURE ReadReal*(VAR R: Rider; VAR x: REAL);
+-    VAR n: INTEGER;
+-  BEGIN ReadInt(R, SYSTEM.VAL(INTEGER, x))
+-  END ReadReal;
+-
+   PROCEDURE ReadString*(VAR R: Rider; VAR x: ARRAY OF CHAR);
+     VAR i: INTEGER; ch: CHAR;
+   BEGIN i := 0; Read(R, ch);
+@@ -423,12 +380,6 @@
+     r.buf.data[r.bpos] := x; INC(r.bpos); r.buf.mod := TRUE
+   END WriteByte;
+ 
+-  PROCEDURE WriteBytes*(VAR r: Rider; x: ARRAY OF BYTE; n: INTEGER);
+-    VAR i: INTEGER;
+-  BEGIN i := 0; (*this implementation is to be improed*)
+-    WHILE i < n DO WriteByte(r, x[i]); INC(i) END
+-  END WriteBytes;
+-
+   PROCEDURE Write*(VAR r: Rider; ch: CHAR);
+     VAR f: File; buf: Buffer;
+   BEGIN (*same as WriteByte*)
+@@ -456,14 +407,6 @@
+     WriteByte(R, x DIV 10000H MOD 100H);
+     WriteByte(R, x DIV 1000000H MOD 100H)
+   END WriteInt;
+-
+-  PROCEDURE WriteSet*(VAR R: Rider; s: SET);
+-  BEGIN WriteInt(R, ORD(s))
+-  END WriteSet;
+-
+-  PROCEDURE WriteReal*(VAR R: Rider; x: REAL);
+-  BEGIN  WriteInt(R, ORD(x))
+-  END WriteReal;
+ 
+   PROCEDURE WriteString*(VAR R: Rider; x: ARRAY OF CHAR);
+     VAR i: INTEGER; ch: CHAR;
+--- 1/Fonts.Mod.txt
++++ 2/Fonts.Mod.txt
+@@ -6,7 +6,7 @@
+   TYPE Font* = POINTER TO FontDesc;
+     FontDesc* = RECORD
+       name*: ARRAY 32 OF CHAR;
+-      height*, minX*, maxX*, minY*, maxY*: INTEGER;
++      height*, minY*, maxY*: INTEGER;
+       next*: Font;
+       T: ARRAY 128 OF INTEGER;
+       raster: ARRAY 2360 OF BYTE
+@@ -73,7 +73,7 @@
+         END;
+         IF NofBytes < 2300 THEN NEW(F) ELSE NEW(LF); F := LF END ;
+         F.name := name;
+-        F.height := height; F.minX := minX; F.maxX := maxX; F.maxY := maxY;
++        F.height := height; F.maxY := maxY;
+         IF minY >= 80H THEN F.minY := minY - 100H ELSE F.minY := minY END ;
+         a0 := SYSTEM.ADR(F.raster);
+         SYSTEM.PUT(a0, 0X); SYSTEM.PUT(a0+1, 0X); SYSTEM.PUT(a0+2, 0X); SYSTEM.PUT(a0+3, 0X); SYSTEM.PUT(a0+4, 0X);
+--- 1/GraphicFrames.Mod.txt
++++ 2/GraphicFrames.Mod.txt
+@@ -18,10 +18,10 @@
+ 
+     FrameDesc* = RECORD (Display.FrameDesc)
+         graph*: Graphics.Graph;
+-        Xg*, Yg*: INTEGER;  (*pos rel to graph origin*)
++        Xg, Yg: INTEGER;  (*pos rel to graph origin*)
+         X1*, Y1*: INTEGER;  (*right and upper margins*)
+         x*, y*, col*: INTEGER;  (*x = X + Xg, y = Y + Yg*)
+-        marked*, ticked*: BOOLEAN;
++        marked, ticked*: BOOLEAN;
+         mark*: LocDesc
+       END ;
+ 
+@@ -60,16 +60,16 @@
+         graph: Graphics.Graph
+       END ;
+ 
+-  VAR Crosshair*: Oberon.Marker;
+-    tack*, dotted*, dotted1*: INTEGER;  (*patterns*)
++  VAR Crosshair: Oberon.Marker;
++    tack*, dotted: INTEGER;  (*patterns*)
+     newcap: Graphics.Caption;
+     TBuf: Texts.Buffer;
+     DW, DH, CL: INTEGER;
+     W: Texts.Writer;
+ 
+   (*Exported procedures:
+-    Restore, Focus, Selected, This, Draw, DrawNorm, Erase,
+-    DrawObj, EraseObj, Change, Defocus, Deselect, Macro, Open*)
++    Restore, Focus, Selected, Draw, DrawNorm, Erase,
++    DrawObj, Change, Defocus, Deselect, Macro, Open*)
+ 
+   PROCEDURE SetChangeMark(F: Frame; col: INTEGER); (*set mark in corner of frame*)
+   BEGIN
+@@ -118,7 +118,7 @@
+   BEGIN SQ.f := NIL; SQ.time := 0; Viewers.Broadcast(SQ); RETURN SQ.f
+   END Selected;
+ 
+-  PROCEDURE This*(x, y: INTEGER): Frame;
++  PROCEDURE This(x, y: INTEGER): Frame;
+     VAR PQ: PosQuery;
+   BEGIN PQ.f := NIL; PQ.x := x; PQ.y := y; Viewers.Broadcast(PQ); RETURN PQ.f
+   END This;
+@@ -148,11 +148,6 @@
+   BEGIN UM.id := drawobj; UM.graph := F.graph; UM.obj := obj; Viewers.Broadcast(UM)
+   END DrawObj;
+ 
+-  PROCEDURE EraseObj*(F: Frame; obj: Graphics.Object);
+-    VAR UM: UpdateMsg;
+-  BEGIN UM.id := drawobjd; UM.graph := F.graph; UM.obj := obj; Viewers.Broadcast(UM)
+-  END EraseObj;
+-
+   PROCEDURE Change*(F: Frame; VAR msg: Graphics.Msg);
+   BEGIN
+     IF F # NIL THEN Erase(F); Graphics.Change(F.graph, msg); Draw(F) END
+@@ -362,7 +357,7 @@
+     END
+   END GetSelection;
+ 
+-  PROCEDURE Handle*(G: Display.Frame; VAR M: Display.FrameMsg);
++  PROCEDURE Handle(G: Display.Frame; VAR M: Display.FrameMsg);
+     VAR x, y, h: INTEGER;
+       DM: DispMsg; dM: DrawMsg;
+       G1: Frame;
+@@ -435,7 +430,7 @@
+     Display.ReplConst(col, x, y, w, h, mode)
+   END ReplConst;
+ 
+-  PROCEDURE ReplPattern*(F: Frame; col, patadr, x, y, w, h, mode: INTEGER);
++  PROCEDURE ReplPattern(F: Frame; col, patadr, x, y, w, h, mode: INTEGER);
+   BEGIN
+     IF x < F.X THEN DEC(w, F.X-x); x := F.X END ;
+     IF x+w >= F.X1 THEN w := F.X1 - x END ;
+@@ -523,7 +518,6 @@
+   Texts.OpenWriter(W);
+   tack := SYSTEM.ADR($0707 4122 1408 1422 4100$);
+   dotted := SYSTEM.ADR($2004 0000 1111 1111 0000 0000 0000 0000 0000 0000$);
+-  dotted1 := SYSTEM.ADR($2004 0000 1111 1111 0000 0000 4444 4444 0000 0000$);
+   Crosshair.Fade := FlipCross; Crosshair.Draw := FlipCross;
+   Graphics.InstallDrawMethods(DrawLine, DrawCaption, DrawMacro)
+ END GraphicFrames.
+--- 1/Graphics.Mod.txt
++++ 2/Graphics.Mod.txt
+@@ -1,7 +1,7 @@
+ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
+-  IMPORT SYSTEM, Files, Modules, Fonts, (*Printer,*) Texts, Oberon;
++  IMPORT Files, Modules, Fonts, Texts, Oberon;
+ 
+-  CONST NameLen* = 32; GraphFileId = 0FAX; LibFileId = 0FBX;
++  CONST NameLen = 32; GraphFileId = 0FAX; LibFileId = 0FBX;
+ 
+   TYPE
+     Graph* = POINTER TO GraphDesc;
+@@ -15,7 +15,7 @@
+     ObjectDesc* = RECORD
+         x*, y*, w*, h*: INTEGER;
+         col*: BYTE;
+-        selected*, marked*: BOOLEAN;
++        selected*, marked: BOOLEAN;
+         do*: Method;
+         next: Object
+       END ;
+@@ -33,26 +33,23 @@
+       END ;
+ 
+     MacHead* = POINTER TO MacHeadDesc;
+-    MacExt* = POINTER TO MacExtDesc;
+     Library* = POINTER TO LibraryDesc;
+ 
+     MacHeadDesc* = RECORD
+         name*: Name;
+         w*, h*: INTEGER;
+-        ext*: MacExt;
+-        lib*: Library;
++        unused: INTEGER;
++        lib: Library;
+         first: Object;
+         next: MacHead
+       END ;
+ 
+     LibraryDesc* = RECORD
+-        name*: Name;
++        name: Name;
+         first: MacHead;
+         next: Library
+       END ;
+ 
+-    MacExtDesc* = RECORD END ;
+-
+     Context* = RECORD
+         nofonts, noflibs, nofclasses: INTEGER;
+         font: ARRAY 10 OF Fonts.Font;
+@@ -68,11 +65,10 @@
+         selectable*: PROCEDURE (obj: Object; x, y: INTEGER): BOOLEAN;
+         read*: PROCEDURE (obj: Object; VAR R: Files.Rider; VAR C: Context);
+         write*: PROCEDURE (obj: Object; cno: INTEGER; VAR R: Files.Rider; VAR C: Context);
+-        print*: PROCEDURE (obj: Object; x, y: INTEGER)
+       END ;
+ 
+     LineDesc* = RECORD (ObjectDesc)
+-        unused*: INTEGER
++        unused: INTEGER
+       END ;
+ 
+     CaptionDesc* = RECORD (ObjectDesc)
+@@ -83,7 +79,7 @@
+         mac*: MacHead
+       END ;
+ 
+-  VAR width*, res*: INTEGER;
++  VAR width*: INTEGER;
+     new: Object;
+     T*: Texts.Text;  (*captions*)
+     LineMethod*, CapMethod*, MacMethod* : Method;
+@@ -133,18 +129,6 @@
+     WHILE obj # NIL DO obj.do.draw(obj, M); obj := obj.next END
+   END Draw;
+ 
+-  PROCEDURE List*(G: Graph);
+-    VAR obj: Object; tag: INTEGER;
+-  BEGIN obj := G.first;
+-    WHILE obj # NIL DO
+-      Texts.Write(XW, 9X); Texts.WriteHex(XW, ORD(obj)); Texts.Write(XW, 9X);
+-      Texts.WriteInt(XW, obj.x, 5); Texts.WriteInt(XW, obj.y, 5); Texts.WriteInt(XW, obj.w, 5); Texts.WriteInt(XW, obj.h, 5);
+-      Texts.Write(XW, "/"); SYSTEM.GET(ORD(obj)-8, tag); Texts.WriteHex(XW, tag);
+-      SYSTEM.GET(ORD(obj)-4, tag); Texts.WriteHex(XW, tag); Texts.WriteLn(XW); obj := obj.next
+-    END ;
+-    Texts.Append(Oberon.Log, XW.buf)
+-  END List;
+-
+   (*----------------procedures operating on selection -------------------*)
+ 
+   PROCEDURE Deselect*(G: Graph);
+@@ -251,7 +235,7 @@
+     C.class[1] := LineMethod.new; C.class[2] := CapMethod.new; C.class[3] := MacMethod.new
+   END InitContext;
+ 
+-  PROCEDURE FontNo*(VAR W: Files.Rider; VAR C: Context; fnt: Fonts.Font): INTEGER;
++  PROCEDURE FontNo(VAR W: Files.Rider; VAR C: Context; fnt: Fonts.Font): INTEGER;
+     VAR fno: INTEGER;
+   BEGIN fno := 0;
+     WHILE (fno < C.nofonts) & (C.font[fno] # fnt) DO INC(fno) END ;
+@@ -278,11 +262,6 @@
+     Files.WriteByte(W, 255)
+   END StoreElems;
+ 
+-  PROCEDURE Store*(G: Graph; VAR W: Files.Rider);
+-    VAR C: Context;
+-  BEGIN InitContext(C); StoreElems(W, C, G.first); G.changed := FALSE
+-  END Store;
+-
+   PROCEDURE WriteObj*(VAR W: Files.Rider; cno: INTEGER; obj: Object);
+   BEGIN Files.WriteByte(W, cno); Files.WriteInt(W, obj.y * 10000H + obj.x);
+     Files.WriteInt(W, obj.h * 10000H + obj.w); Files.WriteByte(W, obj.col)
+@@ -294,15 +273,9 @@
+     InitContext(C); StoreElems(W, C, G.first); Files.Register(F)
+   END WriteFile;
+ 
+-  PROCEDURE Print*(G: Graph; x0, y0: INTEGER);
+-    VAR obj: Object;
+-  BEGIN obj := G.first;
+-    WHILE obj # NIL DO obj.do.print(obj, x0, y0); obj := obj.next END
+-  END Print;
+-
+   (* ---------------------- Loading ------------------------ *)
+ 
+-  PROCEDURE GetClass*(module, allocator: ARRAY OF CHAR; VAR com: Modules.Command);
++  PROCEDURE GetClass(module, allocator: ARRAY OF CHAR; VAR com: Modules.Command);
+     VAR mod: Modules.Module;
+   BEGIN Modules.Load(module, mod);
+     IF mod # NIL THEN
+@@ -312,11 +285,6 @@
+     END
+   END GetClass;
+ 
+-  PROCEDURE Font*(VAR R: Files.Rider; VAR C: Context): Fonts.Font;
+-    VAR fno: BYTE;
+-  BEGIN Files.ReadByte(R, fno); RETURN C.font[fno]
+-  END Font;
+-
+   PROCEDURE ReadObj(VAR R: Files.Rider; obj: Object);
+     VAR xy, wh: INTEGER; dmy: BYTE;
+   BEGIN Files.ReadInt(R, xy); obj.y := xy DIV 10000H; obj.x := xy * 10000H DIV 10000H;
+@@ -349,19 +317,13 @@
+     new := NIL; fobj := obj
+   END LoadElems;
+ 
+-  PROCEDURE Load*(G: Graph; VAR R: Files.Rider);
+-    VAR C: Context;
+-  BEGIN G.sel := NIL; InitContext(C); LoadElems(R, C, G.first)
+-  END Load;
+-
+   PROCEDURE Open*(G: Graph; name: ARRAY OF CHAR);
+     VAR tag: CHAR;
+       F: Files.File; R: Files.Rider; C: Context;
+   BEGIN G.first := NIL; G.sel := NIL; G.time := 0; G.changed := FALSE; F := Files.Old(name);
+     IF F # NIL THEN
+       Files.Set(R, F, 0); Files.Read(R, tag);
+-      IF tag = GraphFileId THEN InitContext(C); LoadElems(R, C, G.first); res := 0 ELSE res := 1 END
+-    ELSE res := 2
++      IF tag = GraphFileId THEN InitContext(C); LoadElems(R, C, G.first) END
+     END
+   END Open;
+ 
+@@ -480,7 +442,7 @@
+       WHILE obj # NIL DO
+         obj.x := obj.x - x0; obj.y := obj.y - y0; obj := obj.next
+       END ;
+-      NEW(mh); mh.w := x1 - x0; mh.h := y1 - y0; mh.first := last; mh.ext := NIL;
++      NEW(mh); mh.w := x1 - x0; mh.h := y1 - y0; mh.first := last;
+       new := NIL; head := mh
+   END MakeMac;
+ 
+@@ -531,13 +493,6 @@
+   BEGIN WriteObj(W, cno, obj)
+   END WriteLine;
+ 
+-(*PROCEDURE PrintLine(obj: Object; x, y: INTEGER);
+-    VAR w, h: INTEGER;
+-  BEGIN w := obj.w * 2; h := obj.h * 2;
+-    IF w < h THEN h := 2*h ELSE w := 2*w END ;
+-    Printer.ReplConst(obj.x * 4 + x, obj.y *4 + y, w, h)
+-  END PrintLine; *)
+-
+   (* ---------------------- Caption Methods ------------------------ *)
+ 
+   PROCEDURE NewCaption;
+@@ -570,7 +525,7 @@
+         INC(w, dx); INC(len); Texts.Read(R, ch)
+       END ;
+       INC(obj.y, fnt.minY-dy); obj.w := w; obj.h := fnt.height;
+-      Texts.ChangeLooks(T, pos, pos+len, {0}, fnt, 0 , 0) |
++      Texts.ChangeLooks(T, pos, pos+len, {0}, fnt, 0) |
+     ColorMsg: obj.col := M(ColorMsg).col
+     END
+   END ChangeCaption;
+@@ -601,21 +556,6 @@
+     END
+   END WriteCaption;
+ 
+-(*  PROCEDURE PrintCaption(obj: Object; x, y: INTEGER);
+-    VAR fnt: Fonts.Font;
+-      i: INTEGER; ch: CHAR;
+-      R: Texts.Reader;
+-      s: ARRAY 128 OF CHAR;
+-  BEGIN
+-    IF obj(Caption).len > 0 THEN
+-      Texts.OpenReader(R, T, obj(Caption).pos); Texts.Read(R, ch);
+-      fnt := R.fnt; DEC(y, fnt.minY*4); i := 0;
+-      WHILE ch >= " " DO s[i] := ch; INC(i); Texts.Read(R, ch) END ;
+-      s[i] := 0X;
+-      IF i > 0 THEN Printer.String(obj.x*4 + x, obj.y*4 + y, s, fnt.name) END
+-    END
+-  END PrintCaption; *)
+-
+   (* ---------------------- Macro Methods ------------------------ *)
+ 
+   PROCEDURE NewMacro;
+@@ -655,14 +595,6 @@
+     WriteObj(W1, cno, obj); Files.WriteByte(W1, lno); Files.WriteString(W1, obj(Macro).mac.name)
+   END WriteMacro;
+ 
+-(*  PROCEDURE PrintMacro(obj: Object; x, y: INTEGER);
+-    VAR elem: Object; mh: MacHead;
+-  BEGIN mh := obj(Macro).mac;
+-    IF mh # NIL THEN elem := mh.first;
+-      WHILE elem # NIL DO elem.do.print(elem, obj.x*4 + x, obj.y*4 + y); elem := elem.next END
+-    END
+-  END PrintMacro; *)
+-
+   PROCEDURE Notify(T: Texts.Text; op: INTEGER; beg, end: LONGINT);
+   BEGIN
+   END Notify;
+@@ -676,11 +608,11 @@
+   NEW(T); Texts.Open(T, ""); T.notify := Notify;
+   NEW(LineMethod); LineMethod.new := NewLine; LineMethod.copy := CopyLine;
+   LineMethod.selectable := LineSelectable; LineMethod.change := ChangeLine;
+-  LineMethod.read := ReadLine; LineMethod.write := WriteLine; (*LineMethod.print := PrintLine;*)
++  LineMethod.read := ReadLine; LineMethod.write := WriteLine;
+   NEW(CapMethod); CapMethod.new := NewCaption; CapMethod.copy := CopyCaption;
+   CapMethod.selectable := CaptionSelectable; CapMethod.change := ChangeCaption;
+-  CapMethod.read := ReadCaption; CapMethod.write := WriteCaption; (*CapMethod.print := PrintCaption;*)
++  CapMethod.read := ReadCaption; CapMethod.write := WriteCaption;
+   NEW(MacMethod); MacMethod.new := NewMacro; MacMethod.copy := CopyMacro;
+   MacMethod.selectable := MacroSelectable; MacMethod.change := ChangeMacro;
+-  MacMethod.read := ReadMacro; MacMethod.write := WriteMacro; (*MacMethod.print := PrintMacro*)
++  MacMethod.read := ReadMacro; MacMethod.write := WriteMacro;
+ END Graphics.
+\ No newline at end of file
+--- 1/Hilbert.Mod.txt
++++ 2/Hilbert.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE Hilbert;  (*NW 8.1.2013  for RISC*)
+-  IMPORT Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
++  IMPORT Display, Viewers, Oberon, MenuViewers, TextFrames;
+ 
+   CONST Menu = "System.Close  System.Copy  System.Grow";
+ 
+--- 1/Input.Mod.txt
++++ 2/Input.Mod.txt
+@@ -5,8 +5,7 @@
+   VAR kbdCode: BYTE; (*last keyboard code read*)
+     Recd, Up, Shift, Ctrl, Ext: BOOLEAN;
+     KTabAdr: INTEGER;  (*keyboard code translation table*)
+-    MW, MH, MX, MY: INTEGER; (*mouse limits and coords*)
+-    MK: SET; (*mouse keys*)
++    MH: INTEGER; (*mouse limits and coords*)
+ 
+ (*FIFO implemented in hardware, because every read must be handled,
+   including tracking the state of the Shift and Ctrl keys*)
+@@ -50,11 +49,11 @@
+     IF y >= MH THEN y := MH-1 END
+   END Mouse;
+ 
+-  PROCEDURE SetMouseLimits*(w, h: INTEGER);
+-  BEGIN MW := w; MH := h
+-  END SetMouseLimits;
++  PROCEDURE SetMouseHeightLimit*(h: INTEGER);
++  BEGIN MH := h
++  END SetMouseHeightLimit;
+ 
+-  PROCEDURE Init*;
++  PROCEDURE Init;
+   BEGIN Up := FALSE; Shift := FALSE; Ctrl := FALSE; Recd := FALSE;
+     KTabAdr := SYSTEM.ADR($
+       00 00 00 00 00 1A 00 00  00 00 00 00 00 09 60 00
+--- 1/Kernel.Mod.txt
++++ 2/Kernel.Mod.txt
+@@ -1,16 +1,16 @@
+ MODULE Kernel;  (*NW/PR  11.4.86 / 27.12.95 / 4.2.2014*)
+   IMPORT SYSTEM;
+-  CONST SectorLength* = 1024;
++  CONST SectorLength = 1024;
+     timer = -64; spiData = -48; spiCtrl = -44;
+     CARD0 = 1; SPIFAST = 4;
+     FSoffset = 80000H; (*256MB in 512-byte blocks*)
+     mapsize = 10000H; (*1K sectors, 64MB*)
+ 
+-  TYPE Sector* = ARRAY SectorLength OF BYTE;
++  TYPE Sector = ARRAY SectorLength OF BYTE;
+ 
+   VAR allocated*, NofSectors*: INTEGER;
+     heapOrg*, heapLim*: INTEGER; 
+-    stackOrg* ,  stackSize*, MemLim*: INTEGER;
++    stackOrg*: INTEGER;
+     clock: INTEGER;
+     list0, list1, list2, list3: INTEGER;  (*lists of free blocks of size n*256, 128, 64, 32 bytes*)
+     data: INTEGER; (*SPI data in*)
+@@ -194,7 +194,7 @@
+     ASSERT(data MOD 32 = 5); SPIIdle(1) (*deselect card*)
+   END WriteSD;
+ 
+-  PROCEDURE InitSecMap*;
++  PROCEDURE InitSecMap;
+     VAR i: INTEGER;
+   BEGIN NofSectors := 0; sectorMap[0] := {0 .. 31}; sectorMap[1] := {0 .. 31};
+     FOR i := 2 TO mapsize DIV 32 - 1 DO sectorMap[i] := {} END
+@@ -205,11 +205,6 @@
+     INCL(sectorMap[sec DIV 32], sec MOD 32); INC(NofSectors)
+   END MarkSector;
+ 
+-  PROCEDURE FreeSector*(sec: INTEGER);
+-  BEGIN sec := sec DIV 29; ASSERT(SYSTEM.H(0) = 0);
+-    EXCL(sectorMap[sec DIV 32], sec MOD 32); DEC(NofSectors)
+-  END FreeSector;
+-
+   PROCEDURE AllocSector*(hint: INTEGER; VAR sec: INTEGER);
+     VAR s: INTEGER;
+   BEGIN (*find free sector, starting after hint*)
+@@ -261,8 +256,8 @@
+ 
+   PROCEDURE Init*;
+   BEGIN Install(SYSTEM.ADR(Trap), 20H);  (*install temporary trap*)
+-    SYSTEM.GET(12, MemLim); SYSTEM.GET(24, heapOrg);
+-    stackOrg := heapOrg; stackSize := 8000H; heapLim := MemLim;
++    SYSTEM.GET(12, heapLim); SYSTEM.GET(24, heapOrg);
++    stackOrg := heapOrg;
+     list1 := 0; list2 := 0; list3 := 0; list0 := heapOrg;
+     SYSTEM.PUT(list0, heapLim - heapOrg); SYSTEM.PUT(list0+4, -1); SYSTEM.PUT(list0+8, 0);
+     allocated := 0; clock := 0; InitSecMap
+--- 1/MenuViewers.Mod.txt
++++ 2/MenuViewers.Mod.txt
+@@ -6,7 +6,7 @@
+   TYPE Viewer* = POINTER TO ViewerDesc;
+ 
+     ViewerDesc* = RECORD (Viewers.ViewerDesc)
+-      menuH*: INTEGER
++      menuH: INTEGER
+     END;
+ 
+     ModifyMsg* = RECORD (Display.FrameMsg)
+@@ -165,7 +165,7 @@
+     Adjust(Menu, reduce, 0, V.Y + V.H - 1, 0)
+   END Suspend;
+ 
+-  PROCEDURE Handle* (V: Display.Frame; VAR M: Display.FrameMsg);
++  PROCEDURE Handle (V: Display.Frame; VAR M: Display.FrameMsg);
+     VAR X, Y: INTEGER;
+       Menu, Main: Display.Frame; V1: Viewer;
+   BEGIN Menu := V.dsc; Main := V.dsc.next;
+--- 1/Modules.Mod.txt
++++ 2/Modules.Mod.txt
+@@ -9,12 +9,12 @@
+     ModDesc* = RECORD
+         name*: ModuleName;
+         next*: Module;
+-        key*, num*, size*, refcnt*: INTEGER;
+-        data*, code*, imp*, cmd*, ent*, ptr*, unused: INTEGER  (*addresses*)
++        key, num, size, refcnt*: INTEGER;
++        data, code*, imp*, cmd*, ent, ptr*, unused: INTEGER  (*addresses*)
+       END ;
+ 
+   VAR root*, M: Module;
+-    MTOrg*, AllocPtr*, res*: INTEGER;
++    MTOrg, AllocPtr*, res*: INTEGER;
+     importing*, imported*: ModuleName;
+     limit: INTEGER;
+ 
+@@ -215,7 +215,7 @@
+     END
+   END Free;
+ 
+-  PROCEDURE Init*;
++  PROCEDURE Init;
+   BEGIN Files.Init; MTOrg := SYSTEM.REG(MT);
+     SYSTEM.GET(16, AllocPtr); SYSTEM.GET(20, root); SYSTEM.GET(24, limit); DEC(limit, 8000H)
+   END Init;
+--- 1/Net.Mod.txt
++++ 2/Net.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE Net; (*NW 3.7.88 / 25.8.91 / PR 7.8.13 / 9.12.13*)
+-  IMPORT SYSTEM, SCC, Files, Viewers, Texts, TextFrames, MenuViewers, Oberon;
++  IMPORT SCC, Files, Texts, Oberon;
+ 
+   CONST PakSize = 512;
+     (*T0 = 300; T1 = 1000; (*timeouts*)*)
+--- 1/Oberon.Mod.txt
++++ 2/Oberon.Mod.txt
+@@ -10,8 +10,8 @@
+   TYPE Painter* = PROCEDURE (x, y: INTEGER);
+     Marker* = RECORD Fade*, Draw*: Painter END;
+     
+-    Cursor* = RECORD
+-        marker*: Marker; on*: BOOLEAN; X*, Y*: INTEGER
++    Cursor = RECORD
++        marker: Marker; on: BOOLEAN; X, Y: INTEGER
+     END;
+ 
+     InputMsg* = RECORD (Display.FrameMsg)
+@@ -20,7 +20,7 @@
+       X*, Y*: INTEGER;
+       ch*: CHAR;
+       fnt*: Fonts.Font;
+-      col*, voff*: INTEGER
++      col*: INTEGER
+     END;
+ 
+     SelectionMsg* = RECORD (Display.FrameMsg)
+@@ -48,7 +48,7 @@
+     END;
+ 
+   VAR User*: ARRAY 8 OF CHAR; Password*: LONGINT;
+-    Arrow*, Star*: Marker;
++    Arrow, Star: Marker;
+     Mouse, Pointer: Cursor;
+     FocusViewer*: Viewers.Viewer;
+     Log*: Texts.Text;
+@@ -60,8 +60,8 @@
+       pos*: LONGINT
+     END;
+ 
+-    CurFnt*: Fonts.Font;
+-    CurCol*, CurOff*: INTEGER;
++    CurFnt: Fonts.Font;
++    CurCol*: INTEGER;
+     NofTasks*: INTEGER;
+ 
+     CurTask: Task;
+@@ -185,10 +185,10 @@
+     END
+   END HandleFiller;
+ 
+-  PROCEDURE OpenDisplay* (UW, SW, H: INTEGER);
++  PROCEDURE OpenDisplay (UW, SW, H: INTEGER);
+     VAR Filler: Viewers.Viewer;
+   BEGIN
+-     Input.SetMouseLimits(Viewers.curW + UW + SW, H);
++     Input.SetMouseHeightLimit(H);
+      Display.ReplConst(Display.black, Viewers.curW, 0, UW + SW, H, Display.replace);
+      NEW(Filler); Filler.handle := HandleFiller;
+      Viewers.InitTrack(UW, H, Filler); (*init user track*)
+@@ -215,10 +215,6 @@
+   BEGIN RETURN X DIV DW * DW
+   END UserTrack;
+ 
+-  PROCEDURE SystemTrack* (X: INTEGER): INTEGER;
+-  BEGIN RETURN X DIV DW * DW + DW DIV 8 * 5
+-  END SystemTrack;
+-
+   PROCEDURE UY (X: INTEGER): INTEGER;
+     VAR h: INTEGER;
+       fil, bot, alt, max: Display.Frame;
+@@ -353,11 +349,7 @@
+   BEGIN CurCol := col
+   END SetColor;
+ 
+-  PROCEDURE SetOffset* (voff: INTEGER);
+-  BEGIN CurOff := voff
+-  END SetOffset;
+-
+-  PROCEDURE Loop*;
++  PROCEDURE Loop;
+     VAR V: Viewers.Viewer; M: InputMsg; N: ControlMsg;
+        prevX, prevY, X, Y, t: INTEGER; keys: SET; ch: CHAR;
+   BEGIN
+@@ -368,7 +360,7 @@
+           N.id := neutralize; Viewers.Broadcast(N); FadeCursor(Pointer); LED(0)
+         ELSIF ch = SETSTAR THEN
+           N.id := mark; N.X := X; N.Y := Y; V := Viewers.This(X, Y); V.handle(V, N)
+-        ELSE M.id := consume; M.ch := ch; M.fnt := CurFnt; M.col := CurCol; M.voff := CurOff;
++        ELSE M.id := consume; M.ch := ch; M.fnt := CurFnt; M.col := CurCol;
+           FocusViewer.handle(FocusViewer, M); DEC(ActCnt)
+         END
+       ELSIF keys # {} THEN
+@@ -404,7 +396,7 @@
+   DW := Display.Width; DH := Display.Height; CL := DW;
+   OpenDisplay(DW DIV 8 * 5, DW DIV 8 * 3, DH);
+   FocusViewer := Viewers.This(0, 0);
+-  CurFnt := Fonts.Default; CurCol := Display.white; CurOff := 0;
++  CurFnt := Fonts.Default; CurCol := Display.white;
+ 
+   ActCnt := 0; CurTask := NewTask(GC, 1000); Install(CurTask);
+   Modules.Load("System", Mod); Mod := NIL; Loop
+--- 1/ORB.Mod.txt
++++ 2/ORB.Mod.txt
+@@ -8,7 +8,7 @@
+     the symbol table (universe), and that of the pseudo-module SYSTEM are initialized. *)
+ 
+   CONST versionkey* = 1; maxTypTab = 64;
+-    (* class values*) Head* = 0;
++    (* class values*) Head = 0;
+       Const* = 1; Var* = 2; Par* = 3; Fld* = 4; Typ* = 5;
+       SProc* = 6; SFunc* = 7; Mod* = 8;
+ 
+@@ -21,7 +21,7 @@
+     Module* = POINTER TO ModDesc;
+     Type* = POINTER TO TypeDesc;
+ 
+-    ObjDesc*= RECORD
++    ObjDesc* = RECORD
+       class*, exno*: BYTE;
+       expo*, rdo*: BOOLEAN;   (*exported / read-only*)
+       lev*: INTEGER;
+@@ -34,7 +34,7 @@
+     ModDesc* = RECORD (ObjDesc) orgname*: ORS.Ident END ;
+ 
+     TypeDesc* = RECORD
+-      form*, ref*, mno*: INTEGER;  (*ref is only used for import/export*)
++      form*, ref, mno*: INTEGER;  (*ref is only used for import/export*)
+       nofpar*: INTEGER;  (*for procedures, extension level for records*)
+       len*: LONGINT;  (*for arrays, len < 0 => open array; for records: adr of descriptor*)
+       dsc*, typobj*: Object;
+--- 1/ORG.Mod.txt
++++ 2/ORG.Mod.txt
+@@ -16,7 +16,7 @@
+     Fad = 12; Fsb = 13; Fml = 14; Fdv = 15;
+     Ldr = 8; Str = 10;
+     BR = 0; BLR = 1; BC = 2; BL = 3;
+-    MI = 0; PL = 8; EQ = 1; NE = 9; LT = 5; GE = 13; LE = 6; GT = 14;
++    MI = 0; EQ = 1; NE = 9; LT = 5; GE = 13; LE = 6; GT = 14;
+ 
+     TYPE Item* = RECORD
+       mode*: INTEGER;
+@@ -691,7 +691,7 @@
+ 
+   (*For Statements*)
+ 
+-  PROCEDURE For0*(VAR x, y: Item);
++  PROCEDURE For0*(VAR y: Item);
+   BEGIN load(y)
+   END For0;
+ 
+@@ -708,7 +708,7 @@
+     Store(x, y)
+   END For1;
+ 
+-  PROCEDURE For2*(VAR x, y, w: Item);
++  PROCEDURE For2*(VAR x, w: Item);
+   BEGIN load(x); DEC(RH); Put1a(Add, x.r, x.r, w.a)
+   END For2;
+ 
+--- 1/ORP.Mod.txt
++++ 2/ORP.Mod.txt
+@@ -554,14 +554,14 @@
+         IF sym = ORS.ident THEN
+           qualident(obj); ORG.MakeItem(x, obj, level); CheckInt(x); CheckReadOnly(x);
+           IF sym = ORS.becomes THEN
+-            ORS.Get(sym); expression(y); CheckInt(y); ORG.For0(x, y); L0 := ORG.Here();
++            ORS.Get(sym); expression(y); CheckInt(y); ORG.For0(y); L0 := ORG.Here();
+             Check(ORS.to, "no TO"); expression(z); CheckInt(z); obj.rdo := TRUE;
+             IF sym = ORS.by THEN ORS.Get(sym); expression(w); CheckConst(w); CheckInt(w)
+             ELSE ORG.MakeConstItem(w, ORB.intType, 1)
+             END ;
+             Check(ORS.do, "no DO"); ORG.For1(x, y, z, w, L1);
+             StatSequence; Check(ORS.end, "no END");
+-            ORG.For2(x, y, w); ORG.BJump(L0); ORG.FixLink(L1); obj.rdo := FALSE
++            ORG.For2(x, w); ORG.BJump(L0); ORG.FixLink(L1); obj.rdo := FALSE
+           ELSE ORS.Mark(":= expected")
+           END
+         ELSE ORS.Mark("identifier expected")
+--- 1/ORS.Mod.txt
++++ 2/ORS.Mod.txt
+@@ -17,7 +17,7 @@
+     (*lexical symbols*)
+     null = 0; times* = 1; rdiv* = 2; div* = 3; mod* = 4;
+     and* = 5; plus* = 6; minus* = 7; or* = 8; eql* = 9;
+-    neq* = 10; lss* = 11; leq* = 12; gtr* = 13; geq* = 14;
++    neq* = 10; lss = 11; leq = 12; gtr = 13; geq* = 14;
+     in* = 15; is* = 16; arrow* = 17; period* = 18;
+     char* = 20; int* = 21; real* = 22; false* = 23; true* = 24;
+     nil* = 25; string* = 26; not* = 27; lparen* = 28; lbrak* = 29;
+--- 1/ORTool.Mod.txt
++++ 2/ORTool.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE ORTool;  (*NW 18.2.2013*)
+-  IMPORT SYSTEM, Files, Texts, Oberon, ORB;
++  IMPORT Files, Texts, Oberon, ORB;
+   VAR W: Texts.Writer;
+     Form: INTEGER;  (*result of ReadType*)
+     mnemo0, mnemo1: ARRAY 16, 4 OF CHAR;  (*mnemonics*)
+@@ -11,8 +11,8 @@
+   END Read;
+ 
+   PROCEDURE ReadType(VAR R: Files.Rider);
+-    VAR key, len, lev, size, off: INTEGER;
+-      ref, mno, class, form, readonly: INTEGER;
++    VAR key, len, size, off: INTEGER;
++      ref, class, form, readonly: INTEGER;
+       name, modname: ARRAY 32 OF CHAR;
+   BEGIN Read(R, ref); Texts.Write(W, " "); Texts.Write(W, "[");
+     IF ref < 0 THEN Texts.Write(W, "^"); Texts.WriteInt(W, -ref, 1)
+@@ -57,7 +57,7 @@
+   END ReadType;
+ 
+   PROCEDURE DecSym*;  (*decode symbol file*)
+-    VAR class, typno, k: INTEGER;
++    VAR class, k: INTEGER;
+       name: ARRAY 32 OF CHAR;
+       F: Files.File; R: Files.Rider;
+       S: Texts.Scanner;
+@@ -108,7 +108,7 @@
+   END WriteReg;
+ 
+   PROCEDURE opcode(w: LONGINT);
+-    VAR k, op, u, a, b, c: LONGINT;
++    VAR k, op, u, a, b: LONGINT;
+   BEGIN
+       k := w DIV 40000000H MOD 4;
+       a := w DIV 1000000H MOD 10H;
+@@ -142,17 +142,8 @@
+       END
+   END opcode;
+ 
+-  PROCEDURE Sync(VAR R: Files.Rider);
+-    VAR ch: CHAR;
+-  BEGIN Files.Read(R, ch); Texts.WriteString(W, "Sync "); Texts.Write(W, ch); Texts.WriteLn(W)
+-  END Sync;
+-  
+-  PROCEDURE Write(VAR R: Files.Rider; x: INTEGER);
+-  BEGIN Files.WriteByte(R, x)  (* -128 <= x < 128 *)
+-  END Write;
+-
+   PROCEDURE DecObj*;   (*decode object file*)
+-    VAR class, i, n, key, size, fix, adr, data, len: INTEGER;
++    VAR class, i, n, key, size, adr, data: INTEGER;
+       ch: CHAR;
+       name: ARRAY 32 OF CHAR;
+       F: Files.File; R: Files.Rider;
+@@ -170,7 +161,6 @@
+           Files.ReadInt(R, key); Texts.WriteHex(W, key); Texts.WriteLn(W);
+           Files.ReadString(R, name)
+         END ;
+-      (* Sync(R); *)
+         Texts.WriteString(W, "type descriptors"); Texts.WriteLn(W);
+         Files.ReadInt(R, n); n := n DIV 4; i := 0;
+         WHILE i < n DO Files.ReadInt(R, data); Texts.WriteHex(W, data); INC(i) END ;
+@@ -186,7 +176,6 @@
+           Files.ReadInt(R, data); Texts.WriteInt(W, i, 4); Texts.Write(W, 9X); Texts.WriteHex(W, data);
+           Texts.Write(W, 9X); opcode(data); Texts.WriteLn(W); INC(i)
+         END ;
+-      (* Sync(R); *)
+         Texts.WriteString(W, "commands:"); Texts.WriteLn(W);
+         Files.ReadString(R, name);
+         WHILE name[0] # 0X DO
+@@ -194,25 +183,21 @@
+           Files.ReadInt(R, adr); Texts.WriteInt(W, adr, 5); Texts.WriteLn(W);
+           Files.ReadString(R, name)
+         END ;
+-      (* Sync(R); *)
+         Texts.WriteString(W, "entries"); Texts.WriteLn(W);
+         Files.ReadInt(R, n); i := 0;
+         WHILE i < n DO
+           Files.ReadInt(R, adr); Texts.WriteInt(W, adr, 6); INC(i)
+         END ;
+         Texts.WriteLn(W);
+-      (* Sync(R); *)
+         Texts.WriteString(W, "pointer refs"); Texts.WriteLn(W); Files.ReadInt(R, adr);
+         WHILE adr # -1 DO Texts.WriteInt(W, adr, 6); Files.ReadInt(R, adr) END ;
+         Texts.WriteLn(W);
+-      (* Sync(R); *)
+         Files.ReadInt(R, data); Texts.WriteString(W, "fixP = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
+         Files.ReadInt(R, data); Texts.WriteString(W, "fixD = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
+         Files.ReadInt(R, data); Texts.WriteString(W, "fixT = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
+         Files.ReadInt(R, data); Texts.WriteString(W, "entry = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
+         Files.Read(R, ch);
+         IF ch # "O" THEN Texts.WriteString(W, "format eror"); Texts.WriteLn(W) END
+-      (* Sync(R); *)
+       ELSE Texts.WriteString(W, " not found"); Texts.WriteLn(W)
+       END ;
+       Texts.Append(Oberon.Log, W.buf)
+--- 1/PrimeNumbers.Mod.txt
++++ 2/PrimeNumbers.Mod.txt
+@@ -1,8 +1,7 @@
+ MODULE PrimeNumbers;  (*NW 6.9.07; Tabulate prime numbers; for Oberon-07  NW 25.1.2013*)
+   IMPORT Texts, Oberon;
+   
+-  VAR n: INTEGER;
+-    W: Texts.Writer;
++  VAR W: Texts.Writer;
+     p: ARRAY 400 OF INTEGER;
+     v: ARRAY 20 OF INTEGER;
+ 
+--- 1/Rectangles.Mod.txt
++++ 2/Rectangles.Mod.txt
+@@ -1,14 +1,14 @@
+ MODULE Rectangles;  (*NW 25.2.90 / 18.4.2013*)
+-  IMPORT SYSTEM, Display, Files, Input, Texts, Oberon, Graphics, GraphicFrames;
++  IMPORT SYSTEM, Display, Files, Oberon, Graphics, GraphicFrames;
+ 
+   TYPE
+-    Rectangle* = POINTER TO RectDesc;
+-    RectDesc* = RECORD (Graphics.ObjectDesc)
+-        lw*, vers*: INTEGER
++    Rectangle = POINTER TO RectDesc;
++    RectDesc = RECORD (Graphics.ObjectDesc)
++        lw, vers: INTEGER
+       END ;
+ 
+-  VAR method*: Graphics.Method;
+-    tack*, grey*: INTEGER;
++  VAR method: Graphics.Method;
++    tack, grey: INTEGER;
+ 
+   PROCEDURE New*;
+     VAR r: Rectangle;
+@@ -78,17 +78,6 @@
+     Files.WriteByte(W, obj(Rectangle).lw); Files.WriteByte(W, obj(Rectangle).vers)
+   END Write;
+ 
+-(* PROCEDURE Print(obj: Graphics.Object; x, y: INTEGER);
+-    VAR w, h, lw, s: INTEGER;
+-  BEGIN INC(x, obj.x * 4); INC(y, obj.y * 4); w := obj.w * 4; h := obj.h * 4;
+-    lw := obj(Rectangle).lw * 2; s := obj(Rectangle).vers;
+-    Printer.ReplConst(x, y, w, lw);
+-    Printer.ReplConst(x+w-lw, y, lw, h);
+-    Printer.ReplConst(x, y+h-lw, w, lw);
+-    Printer.ReplConst(x, y, lw, h);
+-    IF s > 0 THEN Printer.ReplPattern(x, y, w, h, s) END
+-  END Print; *)
+-
+   PROCEDURE Make*;  (*command*)
+     VAR x0, x1, y0, y1: INTEGER;
+       R: Rectangle;
+@@ -112,7 +101,7 @@
+   method.module := "Rectangles"; method.allocator := "New";
+   method.new := New; method.copy := Copy; method.draw := Draw;
+   method.selectable := Selectable; method.change := Change;
+-  method.read := Read; method.write := Write; (*method.print := Print*)
++  method.read := Read; method.write := Write;
+   tack := SYSTEM.ADR($0707 4122 1408 1422 4100$);
+   grey := SYSTEM.ADR($2004 0000 1111 1111 0000 0000 4444 4444 0000 0000$)
+ END Rectangles.
+--- 1/SCC.Mod.txt
++++ 2/SCC.Mod.txt
+@@ -15,7 +15,7 @@
+     END ;
+ 
+   VAR
+-    filter*: BOOLEAN; Adr*: BYTE; rcvd: INTEGER;
++    filter: BOOLEAN; Adr: BYTE; rcvd: INTEGER;
+     rx: RECORD
+       hd: Header;
+       dat: ARRAY MaxPacket-HdrSize OF BYTE
+--- 1/Stars.Mod.txt
++++ 2/Stars.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE Stars;   (*NW 15.1.2013, 15.11.2013*)
+-  IMPORT SYSTEM, Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
++  IMPORT Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
+ 
+   CONST N = 6;  (*nof stars*)
+     w = 16;   (*width of star*)
+--- 1/System.Mod.txt
++++ 2/System.Mod.txt
+@@ -47,12 +47,6 @@
+     IF S.class = Texts.Int THEN Oberon.SetColor(S.i) END
+   END SetColor;
+ 
+-  PROCEDURE SetOffset*;
+-    VAR S: Texts.Scanner;
+-  BEGIN GetArg(S);
+-    IF S.class = Texts.Int THEN Oberon.SetOffset(S.i) END
+-  END SetOffset;
+-  
+   PROCEDURE Date*;
+     VAR S: Texts.Scanner;
+       dt, hr, min, sec, yr, mo, day: LONGINT;
+@@ -376,22 +370,6 @@
+     main := TextFrames.NewText(TextFrames.Text("System.Tool"), 0);
+     toolV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y)
+   END OpenViewers;
+-
+-  PROCEDURE ExtendDisplay*;
+-    VAR V: Viewers.Viewer;
+-      X, Y, DX, DW, DH: INTEGER;
+-      S: Texts.Scanner;
+-  BEGIN GetArg(S);
+-    IF S.class = Texts.Name THEN
+-      DX := Viewers.curW; DW := Oberon.DisplayWidth(DX); DH := Oberon.DisplayHeight(DX);
+-      Oberon.OpenDisplay(DW DIV 8 * 5, DW DIV 8 * 3, DH);
+-      Oberon.AllocateSystemViewer(DX, X, Y);
+-      V := MenuViewers.New(
+-        TextFrames.NewMenu(S.s, StandardMenu),
+-        TextFrames.NewText(TextFrames.Text(S.s), 0),
+-        TextFrames.menuH, X, Y)
+-    END
+-  END ExtendDisplay;
+ 
+   PROCEDURE Trap(VAR a: INTEGER; b: INTEGER);
+     VAR u, v, w: INTEGER; mod: Modules.Module;
+--- 1/TextFrames.Mod.txt
++++ 2/TextFrames.Mod.txt
+@@ -1,7 +1,7 @@
+ MODULE TextFrames; (*JG 8.10.90 / NW 10.5.2013 / 11.2.2017*)
+   IMPORT Modules, Input, Display, Viewers, Fonts, Texts, Oberon, MenuViewers;
+ 
+-  CONST replace* = 0; insert* = 1; delete* = 2; unmark* = 3; (*message id*)
++  CONST replace = 0; insert = 1; delete = 2; (*message id*)
+     BS = 8X; TAB = 9X; CR = 0DX; DEL = 7FX;
+ 
+   TYPE Line = POINTER TO LineDesc;
+@@ -13,8 +13,8 @@
+     END;
+ 
+     Location* = RECORD
+-      org*, pos*: LONGINT;
+-      dx*, x*, y*: INTEGER;
++      org, pos*: LONGINT;
++      dx, x, y: INTEGER;
+       lin: Line
+     END;
+ 
+@@ -22,22 +22,21 @@
+     FrameDesc* = RECORD
+       (Display.FrameDesc)
+       text*: Texts.Text;
+-      org*: LONGINT;
+-      col*: INTEGER;
+-      lsp*: INTEGER;
+-      left*, right*, top*, bot*: INTEGER;
+-      markH*: INTEGER;
+-      time*: LONGINT;
+-      hasCar*, hasSel*, hasMark: BOOLEAN;
++      org: LONGINT;
++      col: INTEGER;
++      left, right, top, bot: INTEGER;
++      markH: INTEGER;
++      time: LONGINT;
++      hasCar*, hasSel, hasMark: BOOLEAN;
+       carloc*: Location;
+-      selbeg*, selend*: Location;
++      selbeg, selend: Location;
+       trailer: Line
+     END;
+ 
+-    UpdateMsg* = RECORD (Display.FrameMsg)
+-      id*: INTEGER;
+-      text*: Texts.Text;
+-      beg*, end*: LONGINT
++    UpdateMsg = RECORD (Display.FrameMsg)
++      id: INTEGER;
++      text: Texts.Text;
++      beg, end: LONGINT
+     END;
+ 
+     CopyOverMsg = RECORD (Display.FrameMsg)
+@@ -45,8 +44,8 @@
+       beg, end: LONGINT
+     END;
+ 
+-  VAR TBuf*, DelBuf: Texts.Buffer;
+-    menuH*, barW*, left*, right*, top*, bot*, lsp*: INTEGER; (*standard sizes*)
++  VAR TBuf, DelBuf: Texts.Buffer;
++    menuH*, barW, left, right, top, bot, lsp: INTEGER; (*standard sizes*)
+     asr, dsr, selH, markW, eolW: INTEGER;
+     nextCh: CHAR;
+     ScrollMarker: Oberon.Marker;
+@@ -132,7 +131,7 @@
+     END
+   END Validate;
+ 
+-  PROCEDURE Mark* (F: Frame; on: BOOLEAN);
++  PROCEDURE Mark (F: Frame; on: BOOLEAN);
+   BEGIN
+     IF (F.H > 0) & (F.left >= barW) & ((F.hasMark & ~on) OR (~F.hasMark & on)) THEN
+       Display.ReplConst(Display.white, F.X + 1, F.Y + F.H - 1 - F.markH, markW, 1, Display.invert)
+@@ -140,30 +139,7 @@
+     F.hasMark := on
+   END Mark;
+ 
+-  PROCEDURE Restore* (F: Frame);
+-    VAR R: Texts.Reader; L, l: Line; curY, botY: INTEGER;
+-  BEGIN  Display.ReplConst(F.col, F.X, F.Y, F.W, F.H, Display.replace);
+-    IF F.left >= barW THEN
+-      Display.ReplConst(Display.white, F.X + barW - 1, F.Y, 1, F.H, Display.invert)
+-    END;
+-    Validate(F.text, F.org);
+-    botY := F.Y + F.bot + dsr;
+-    Texts.OpenReader(R, F.text, F.org); Texts.Read(R, nextCh);
+-    L := F.trailer; curY := F.Y + F.H - F.top - asr;
+-    WHILE ~L.eot & (curY >= botY) DO
+-      NEW(l);
+-      DisplayLine(F, l, R, F.X + F.left, curY, 0);
+-      L.next := l; L := l; curY := curY - lsp
+-    END;
+-    L.next := F.trailer;
+-    F.markH := F.org * F.H DIV (F.text.len + 1)
+-  END Restore;
+-
+-  PROCEDURE Suspend* (F: Frame);
+-  BEGIN  F.trailer.next := F.trailer
+-  END Suspend;
+-
+-  PROCEDURE Extend* (F: Frame; newY: INTEGER);
++  PROCEDURE Extend (F: Frame; newY: INTEGER);
+     VAR R: Texts.Reader; L, l: Line;
+     org: LONGINT; curY, botY: INTEGER;
+   BEGIN Display.ReplConst(F.col, F.X, newY, F.W, F.Y - newY, Display.replace);
+@@ -187,7 +163,7 @@
+     F.markH := F.org * F.H DIV (F.text.len + 1)
+   END Extend;
+ 
+-  PROCEDURE Reduce* (F: Frame; newY: INTEGER);
++  PROCEDURE Reduce (F: Frame; newY: INTEGER);
+     VAR L: Line; curY, botY: INTEGER;
+   BEGIN F.H := F.H + F.Y - newY; F.Y := newY;
+     botY := F.Y + F.bot + dsr;
+@@ -318,11 +294,6 @@
+     loc.x := F.left + Width(R, pos - org); loc.y := cury
+   END LocatePos;
+ 
+-  PROCEDURE Pos* (F: Frame; X, Y: INTEGER): LONGINT;
+-    VAR loc: Location;
+-  BEGIN LocateChar(F, X - F.X, Y - F.Y, loc); RETURN loc.pos
+-  END Pos;
+-
+   PROCEDURE FlipCaret (F: Frame);
+   BEGIN
+     IF (F.carloc.x < F.W) & (F.carloc.y >= 10) & (F.carloc.x + 12 < F.W) THEN
+@@ -334,7 +305,7 @@
+   BEGIN LocatePos(F, pos, F.carloc); FlipCaret(F); F.hasCar := TRUE
+   END SetCaret;
+ 
+-  PROCEDURE TrackCaret* (F: Frame; X, Y: INTEGER; VAR keysum: SET);
++  PROCEDURE TrackCaret (F: Frame; X, Y: INTEGER; VAR keysum: SET);
+     VAR loc: Location; keys: SET;
+   BEGIN
+     IF F.trailer.next # F.trailer THEN
+@@ -367,7 +338,7 @@
+     END
+   END FlipSelection;
+ 
+-  PROCEDURE SetSelection* (F: Frame; beg, end: LONGINT);
++  PROCEDURE SetSelection (F: Frame; beg, end: LONGINT);
+   BEGIN
+     IF F.hasSel THEN FlipSelection(F, F.selbeg, F.selend) END;
+     LocatePos(F, beg, F.selbeg); LocatePos(F, end, F.selend);
+@@ -376,7 +347,7 @@
+     END
+   END SetSelection;
+ 
+-  PROCEDURE TrackSelection* (F: Frame; X, Y: INTEGER; VAR keysum: SET);
++  PROCEDURE TrackSelection (F: Frame; X, Y: INTEGER; VAR keysum: SET);
+     VAR loc: Location; keys: SET;
+   BEGIN
+     IF F.trailer.next # F.trailer THEN
+@@ -407,7 +378,7 @@
+   BEGIN IF F.hasSel THEN FlipSelection(F, F.selbeg, F.selend); F.hasSel := FALSE END
+   END RemoveSelection;
+ 
+-  PROCEDURE TrackLine* (F: Frame; X, Y: INTEGER; VAR org: LONGINT; VAR keysum: SET);
++  PROCEDURE TrackLine (F: Frame; X, Y: INTEGER; VAR org: LONGINT; VAR keysum: SET);
+     VAR old, new: Location; keys: SET;
+   BEGIN
+     IF F.trailer.next # F.trailer THEN
+@@ -430,7 +401,7 @@
+     END
+   END TrackLine;
+ 
+-  PROCEDURE TrackWord* (F: Frame; X, Y: INTEGER; VAR pos: LONGINT; VAR keysum: SET);
++  PROCEDURE TrackWord (F: Frame; X, Y: INTEGER; VAR pos: LONGINT; VAR keysum: SET);
+     VAR old, new: Location; keys: SET;
+   BEGIN
+     IF F.trailer.next # F.trailer THEN
+@@ -453,7 +424,7 @@
+     END
+   END TrackWord;
+   
+-  PROCEDURE Replace* (F: Frame; beg, end: LONGINT);
++  PROCEDURE Replace (F: Frame; beg, end: LONGINT);
+     VAR R: Texts.Reader; L: Line;
+       org, len: LONGINT; curY, wid: INTEGER;
+   BEGIN
+@@ -479,7 +450,7 @@
+     UpdateMark(F)
+   END Replace;
+ 
+-  PROCEDURE Insert* (F: Frame; beg, end: LONGINT);
++  PROCEDURE Insert (F: Frame; beg, end: LONGINT);
+     VAR R: Texts.Reader; L, L0, l: Line;
+       org, len: LONGINT; curY, botY, Y0, Y1, Y2, dY, wid: INTEGER;
+   BEGIN
+@@ -529,7 +500,7 @@
+     UpdateMark(F)
+   END Insert;
+ 
+-  PROCEDURE Delete* (F: Frame; beg, end: LONGINT);
++  PROCEDURE Delete (F: Frame; beg, end: LONGINT);
+     VAR R: Texts.Reader; L, L0, l: Line;
+       org, org0, len: LONGINT; curY, botY, Y0, Y1, wid: INTEGER;
+   BEGIN
+@@ -588,12 +559,12 @@
+   BEGIN RemoveCaret(F); RemoveSelection(F)
+   END RemoveMarks;
+ 
+-  PROCEDURE NotifyDisplay* (T: Texts.Text; op: INTEGER; beg, end: LONGINT);
++  PROCEDURE NotifyDisplay (T: Texts.Text; op: INTEGER; beg, end: LONGINT);
+     VAR M: UpdateMsg;
+   BEGIN M.id := op; M.text := T; M.beg := beg; M.end := end; Viewers.Broadcast(M)
+   END NotifyDisplay;
+ 
+-  PROCEDURE Call* (F: Frame; pos: LONGINT; new: BOOLEAN);
++  PROCEDURE Call (F: Frame; pos: LONGINT; new: BOOLEAN);
+     VAR S: Texts.Scanner; res: INTEGER;
+   BEGIN
+     Texts.OpenScanner(S, F.text, pos); Texts.Scan(S);
+@@ -614,7 +585,7 @@
+     END
+   END Call;
+ 
+-  PROCEDURE Write* (F: Frame; ch: CHAR; fnt: Fonts.Font; col, voff: INTEGER);
++  PROCEDURE Write (F: Frame; ch: CHAR; fnt: Fonts.Font; col: INTEGER);
+     VAR buf: Texts.Buffer;
+   BEGIN (*F.hasCar*)
+     IF ch = BS THEN  (*backspace*)
+@@ -633,21 +604,13 @@
+         NEW(TBuf); Texts.OpenBuf(TBuf); Texts.Delete(F.text, F.selbeg.pos, F.selend.pos, TBuf)
+       END
+     ELSIF (20X <= ch) & (ch <= DEL) OR (ch = CR) OR (ch = TAB) THEN
+-      KW.fnt := fnt; KW.col := col; KW.voff := voff; Texts.Write(KW, ch);
++      KW.fnt := fnt; KW.col := col; Texts.Write(KW, ch);
+       Texts.Insert(F.text, F.carloc.pos, KW.buf);
+       SetCaret(F, F.carloc.pos + 1)
+     END
+   END Write;
+ 
+-  PROCEDURE Defocus* (F: Frame);
+-  BEGIN RemoveCaret(F)
+-  END Defocus;
+-
+-  PROCEDURE Neutralize* (F: Frame);
+-  BEGIN RemoveMarks(F)
+-  END Neutralize;
+-
+-  PROCEDURE Modify* (F: Frame; id, dY, Y, H: INTEGER);
++  PROCEDURE Modify (F: Frame; id, dY, Y, H: INTEGER);
+   BEGIN
+     Mark(F, FALSE); RemoveMarks(F); SetChangeMark(F,  FALSE);
+     IF id = MenuViewers.extend THEN
+@@ -660,19 +623,19 @@
+     IF F.H > 0 THEN Mark(F, TRUE); SetChangeMark(F,  F.text.changed) END
+   END Modify;
+ 
+-  PROCEDURE Open* (F: Frame; H: Display.Handler; T: Texts.Text; org: LONGINT;
+-        col, left, right, top, bot, lsp: INTEGER);
++  PROCEDURE Open (F: Frame; H: Display.Handler; T: Texts.Text; org: LONGINT;
++        col, left, right, top, bot: INTEGER);
+     VAR L: Line;
+   BEGIN NEW(L);
+     L.len := 0; L.wid := 0; L.eot := FALSE; L.next := L;
+     F.handle := H; F.text := T; F.org := org; F.trailer := L;
+     F.left := left; F.right := right; F.top := top; F.bot := bot;
+-    F.lsp := lsp; F.col := col; F.hasMark := FALSE; F.hasCar := FALSE; F.hasSel := FALSE
++    F.col := col; F.hasMark := FALSE; F.hasCar := FALSE; F.hasSel := FALSE
+   END Open;
+ 
+-  PROCEDURE Copy* (F: Frame; VAR F1: Frame);
++  PROCEDURE Copy (F: Frame; VAR F1: Frame);
+   BEGIN NEW(F1);
+-    Open(F1, F.handle, F.text, F.org, F.col, F.left, F.right, F.top, F.bot, F.lsp)
++    Open(F1, F.handle, F.text, F.org, F.col, F.left, F.right, F.top, F.bot)
+   END Copy;
+ 
+   PROCEDURE CopyOver(F: Frame; text: Texts.Text; beg, end: LONGINT);
+@@ -685,7 +648,7 @@
+     END
+   END CopyOver;
+ 
+-  PROCEDURE GetSelection* (F: Frame; VAR text: Texts.Text; VAR beg, end, time: LONGINT);
++  PROCEDURE GetSelection (F: Frame; VAR text: Texts.Text; VAR beg, end, time: LONGINT);
+   BEGIN
+     IF F.hasSel THEN
+       IF F.text = text THEN
+@@ -697,7 +660,7 @@
+     END
+   END GetSelection;
+ 
+-  PROCEDURE Update* (F: Frame; VAR M: UpdateMsg);
++  PROCEDURE Update (F: Frame; VAR M: UpdateMsg);
+   BEGIN (*F.text = M.text*) SetChangeMark(F, FALSE);
+     RemoveMarks(F); Oberon.RemoveMarks(F.X, F.Y, F.W, F.H);
+     IF M.id = replace THEN Replace(F, M.beg, M.end)
+@@ -707,7 +670,7 @@
+     SetChangeMark(F,  F.text.changed)
+   END Update;
+ 
+-  PROCEDURE Edit* (F: Frame; X, Y: INTEGER; Keys: SET);
++  PROCEDURE Edit (F: Frame; X, Y: INTEGER; Keys: SET);
+     VAR M: CopyOverMsg;
+       text: Texts.Text;
+       buf: Texts.Buffer;
+@@ -715,7 +678,7 @@
+       beg, end, time, pos: LONGINT;
+       keysum: SET;
+       fnt: Fonts.Font;
+-      col, voff: INTEGER;
++      col: INTEGER;
+   BEGIN
+     IF X < F.X + Min(F.left, barW) THEN  (*scroll bar*)
+       Oberon.DrawMouse(ScrollMarker, X, Y); keysum := Keys;
+@@ -783,15 +746,15 @@
+         ELSIF keysum = {2, 0} THEN (*ML, MR: copy looks*)
+           Oberon.GetSelection(text, beg, end, time);
+           IF time >= 0 THEN
+-            Texts.Attributes(F.text, F.carloc.pos, fnt, col, voff);
+-            IF fnt # NIL THEN Texts.ChangeLooks(text, beg, end, {0,1,2}, fnt, col, voff) END
++            Texts.Attributes(F.text, F.carloc.pos, fnt, col);
++            IF fnt # NIL THEN Texts.ChangeLooks(text, beg, end, {0,1,2}, fnt, col) END
+           END
+         END
+       END
+     END
+   END Edit;
+ 
+-  PROCEDURE Handle* (F: Display.Frame; VAR M: Display.FrameMsg);
++  PROCEDURE Handle (F: Display.Frame; VAR M: Display.FrameMsg);
+     VAR F1: Frame; buf: Texts.Buffer;
+   BEGIN
+     CASE F OF Frame:
+@@ -799,11 +762,11 @@
+       Oberon.InputMsg:
+         IF M.id = Oberon.track THEN Edit(F, M.X, M.Y, M.keys)
+         ELSIF M.id = Oberon.consume THEN
+-          IF F.hasCar THEN Write(F, M.ch, M.fnt, M.col, M.voff) END
++          IF F.hasCar THEN Write(F, M.ch, M.fnt, M.col) END
+         END |
+       Oberon.ControlMsg:
+-        IF M.id = Oberon.defocus THEN Defocus(F)
+-        ELSIF M.id = Oberon.neutralize THEN Neutralize(F)
++        IF M.id = Oberon.defocus THEN RemoveCaret(F)
++        ELSIF M.id = Oberon.neutralize THEN RemoveMarks(F)
+         END |
+       Oberon.SelectionMsg:
+         GetSelection(F, M.text, M.beg, M.end, M.time) |
+@@ -832,13 +795,13 @@
+   PROCEDURE NewMenu* (name, commands: ARRAY OF CHAR): Frame;
+     VAR F: Frame; T: Texts.Text;
+   BEGIN NEW(F); T := Menu(name, commands);
+-    Open(F, Handle, T, 0, Display.white, left DIV 4, 0, 0, 0, lsp); RETURN F
++    Open(F, Handle, T, 0, Display.white, left DIV 4, 0, 0, 0); RETURN F
+   END NewMenu;
+ 
+   PROCEDURE NewText* (text: Texts.Text; pos: LONGINT): Frame;
+     VAR F: Frame;
+   BEGIN NEW(F);
+-    Open(F, Handle, text, pos, Display.black, left, right, top, bot, lsp); RETURN F
++    Open(F, Handle, text, pos, Display.black, left, right, top, bot); RETURN F
+   END NewText;
+ 
+ BEGIN NEW(TBuf); NEW(DelBuf);
+--- 1/Texts.Mod.txt
++++ 2/Texts.Mod.txt
+@@ -2,26 +2,26 @@
+   IMPORT Files, Fonts;
+ 
+   CONST (*scanner symbol classes*)
+-    Inval* = 0;         (*invalid symbol*)
++    Inval = 0;          (*invalid symbol*)
+     Name* = 1;          (*name s (length len)*)
+     String* = 2;        (*literal string s (length len)*)
+     Int* = 3;           (*integer i (decimal or hexadecimal)*)
+-    Real* = 4;          (*real number x*)
++    Real = 4;           (*real number x*)
+     Char* = 6;          (*special character c*)
+ 
+     (* TextBlock = TextTag "1" offset run {run} "0" len {AsciiCode}.
+       run = fnt [name] col voff len. *)
+ 
+-    TAB = 9X; CR = 0DX; maxD = 9;
++    TAB = 9X; CR = 0DX;
+     TextTag = 0F1X;
+-    replace* = 0; insert* = 1; delete* = 2; unmark* = 3;  (*op-codes*)
++    replace = 0; insert = 1; delete = 2; unmark = 3;  (*op-codes*)
+ 
+   TYPE Piece = POINTER TO PieceDesc;
+     PieceDesc = RECORD
+       f: Files.File;
+       off, len: LONGINT;
+       fnt: Fonts.Font;
+-      col, voff: INTEGER;
++      col: INTEGER;
+       prev, next: Piece
+     END;
+ 
+@@ -39,7 +39,7 @@
+     Reader* = RECORD
+       eot*: BOOLEAN;
+       fnt*: Fonts.Font;
+-      col*, voff*: INTEGER;
++      col*: INTEGER;
+       ref: Piece;
+       org: LONGINT;
+       off: LONGINT;
+@@ -50,8 +50,7 @@
+       nextCh*: CHAR;
+       line*, class*: INTEGER;
+       i*: LONGINT;
+-      x*: REAL;
+-      y*: LONGREAL;
++      x: REAL;
+       c*: CHAR;
+       len*: INTEGER;
+       s*: ARRAY 32 OF CHAR
+@@ -66,7 +65,7 @@
+     Writer* = RECORD
+       buf*: Buffer;
+       fnt*: Fonts.Font;
+-      col*, voff*: INTEGER;
++      col*: INTEGER;
+       rider: Files.Rider
+     END;     
+ 
+@@ -77,10 +76,10 @@
+   PROCEDURE Trailer(): Piece;
+     VAR Q: Piece;
+   BEGIN NEW(Q);
+-    Q.f := TrailerFile; Q.off := -1; Q.len := 1; Q.fnt := NIL; Q.col := 0; Q.voff := 0; RETURN Q
++    Q.f := TrailerFile; Q.off := -1; Q.len := 1; Q.fnt := NIL; Q.col := 0; RETURN Q
+   END Trailer;
+ 
+-  PROCEDURE Load* (VAR R: Files.Rider; T: Text);
++  PROCEDURE Load (VAR R: Files.Rider; T: Text);
+     VAR Q, q, p: Piece;
+       off: LONGINT;
+       N, fno: INTEGER; bt: BYTE;
+@@ -96,7 +95,7 @@
+       END;
+       NEW(q); q.fnt := Dict[fno];
+       Files.ReadByte(R, bt); q.col := bt;
+-      Files.ReadByte(R, bt); q.voff := ASR(LSL(bt, -24), 24);
++      Files.ReadByte(R, bt);
+       Files.ReadInt(R, q.len);
+       Files.ReadByte(R, bt); fno := bt;
+       q.f := f; q.off := off; off := off + q.len;
+@@ -115,7 +114,7 @@
+       IF tag = TextTag THEN Load(R, T)
+       ELSE (*Ascii file*)
+         len := Files.Length(f); Q := Trailer();
+-        NEW(q); q.fnt := Fonts.Default; q.col := 1; q.voff := 0; q.f := f; q.off := 0; q.len := len;
++        NEW(q); q.fnt := Fonts.Default; q.col := 1; q.f := f; q.off := 0; q.len := len;
+         Q.next := q; q.prev := Q; q.next := Q; Q.prev := q; T.trailer := Q; T.len := len
+       END
+     ELSE (*create new text*)
+@@ -124,7 +123,7 @@
+     T.changed := FALSE; T.org := -1; T.pce := T.trailer (*init cache*)
+   END Open;
+ 
+-  PROCEDURE Store* (VAR W: Files.Rider; T: Text);
++  PROCEDURE Store (VAR W: Files.Rider; T: Text);
+     VAR p, q: Piece;
+       R: Files.Rider;
+       off, rlen, pos: LONGINT;
+@@ -135,7 +134,7 @@
+     N := 1; p := T.trailer.next;
+     WHILE p # T.trailer DO
+       rlen := p.len; q := p.next;
+-      WHILE (q # T.trailer) & (q.fnt = p.fnt) & (q.col = p.col) & (q.voff = p.voff) DO
++      WHILE (q # T.trailer) & (q.fnt = p.fnt) & (q.col = p.col) DO
+         rlen := rlen + q.len; q := q.next
+       END;
+       Dict[N] := p.fnt.name;
+@@ -143,7 +142,7 @@
+       WHILE Dict[n] # p.fnt.name DO INC(n) END;
+       Files.WriteByte(W, n);
+       IF n = N THEN Files.WriteString(W, p.fnt.name); INC(N) END;
+-      Files.WriteByte(W, p.col); Files.WriteByte(W, p.voff); Files.WriteInt(W, rlen);
++      Files.WriteByte(W, p.col); Files.WriteByte(W, 0); Files.WriteInt(W, rlen);
+       p := q
+     END;
+     Files.WriteByte(W, 0); Files.WriteInt(W, T.len);
+@@ -187,7 +186,7 @@
+     VAR q: Piece;
+   BEGIN
+     IF off > 0 THEN NEW(q);
+-      q.fnt := p.fnt; q.col := p.col; q.voff := p.voff;
++      q.fnt := p.fnt; q.col := p.col;
+       q.len := p.len - off;
+       q.f := p.f; q.off := p.off + off;
+       p.len := off;
+@@ -232,7 +231,7 @@
+     IF T.org >= org THEN T.org := org - p.prev.len; T.pce := p.prev END ;
+     pl := pr.prev; qb := B.header.next;
+     IF (qb # NIL) & (qb.f = pl.f) & (qb.off = pl.off + pl.len)
+-        & (qb.fnt = pl.fnt) & (qb.col = pl.col) & (qb.voff = pl.voff) THEN
++        & (qb.fnt = pl.fnt) & (qb.col = pl.col) THEN
+       pl.len := pl.len + qb.len; qb := qb.next
+     END;
+     IF qb # NIL THEN qe := B.last;
+@@ -266,7 +265,7 @@
+     IF T.notify # NIL THEN T.notify(T, delete, beg, end) END
+   END Delete;
+ 
+-  PROCEDURE ChangeLooks* (T: Text; beg, end: LONGINT; sel: SET; fnt: Fonts.Font; col, voff: INTEGER);
++  PROCEDURE ChangeLooks* (T: Text; beg, end: LONGINT; sel: SET; fnt: Fonts.Font; col: INTEGER);
+     VAR pb, pe, p: Piece; org: LONGINT;
+   BEGIN
+     IF end > T.len THEN end := T.len END;
+@@ -276,16 +275,15 @@
+     REPEAT
+       IF 0 IN sel THEN p.fnt := fnt END;
+       IF 1 IN sel THEN p.col := col END;
+-      IF 2 IN sel THEN p.voff := voff END;
+       p := p.next
+     UNTIL p = pe;
+     T.changed := TRUE;
+     IF T.notify # NIL THEN T.notify(T, replace, beg, end) END
+   END ChangeLooks;
+ 
+-  PROCEDURE Attributes*(T: Text; pos: LONGINT; VAR fnt: Fonts.Font; VAR col, voff: INTEGER);
++  PROCEDURE Attributes*(T: Text; pos: LONGINT; VAR fnt: Fonts.Font; VAR col: INTEGER);
+     VAR p: Piece; org: LONGINT;
+-  BEGIN FindPiece(T, pos, org, p); fnt := p.fnt; col := p.col; voff := p.voff
++  BEGIN FindPiece(T, pos, org, p); fnt := p.fnt; col := p.col
+   END Attributes;
+ 
+   (* ------------------ Access: Readers ------------------------- *)
+@@ -299,7 +297,7 @@
+ 
+   PROCEDURE Read* (VAR R: Reader; VAR ch: CHAR);
+   BEGIN Files.Read(R.rider, ch);
+-    R.fnt := R.ref.fnt; R.col := R.ref.col; R.voff := R.ref.voff;
++    R.fnt := R.ref.fnt; R.col := R.ref.col;
+     INC(R.off);
+     IF R.off = R.ref.len THEN
+       IF R.ref.f = TrailerFile THEN R.eot := TRUE END;
+@@ -402,28 +400,16 @@
+ 
+   PROCEDURE OpenWriter* (VAR W: Writer);
+   BEGIN NEW(W.buf);
+-    OpenBuf(W.buf); W.fnt := Fonts.Default; W.col := 15; W.voff := 0;
++    OpenBuf(W.buf); W.fnt := Fonts.Default; W.col := 15;
+     Files.Set(W.rider, Files.New(""), 0)
+   END OpenWriter;
+ 
+-  PROCEDURE SetFont* (VAR W: Writer; fnt: Fonts.Font);
+-  BEGIN W.fnt := fnt
+-  END SetFont;
+-
+-  PROCEDURE SetColor* (VAR W: Writer; col: INTEGER);
+-  BEGIN W.col := col
+-  END SetColor;
+-
+-  PROCEDURE SetOffset* (VAR W: Writer; voff: INTEGER);
+-  BEGIN W.voff := voff
+-  END SetOffset;
+-
+   PROCEDURE Write* (VAR W: Writer; ch: CHAR);
+     VAR p: Piece;
+   BEGIN
+-    IF (W.buf.last.fnt # W.fnt) OR (W.buf.last.col # W.col) OR (W.buf.last.voff # W.voff) THEN
++    IF (W.buf.last.fnt # W.fnt) OR (W.buf.last.col # W.col) THEN
+       NEW(p); p.f := Files.Base(W.rider); p.off := Files.Pos(W.rider); p.len := 0;
+-      p.fnt := W.fnt; p.col := W.col; p.voff:= W.voff;
++      p.fnt := W.fnt; p.col := W.col;
+       p.next := NIL; W.buf.last.next := p;
+       p.prev := W.buf.last; W.buf.last := p
+     END;
+@@ -493,27 +479,6 @@
+       Write(W, CHR(e DIV 10 + 30H)); Write(W, CHR(e MOD 10 + 30H))
+     END
+   END WriteReal;
+-
+-  PROCEDURE WriteRealFix* (VAR W: Writer; x: REAL; n, k: INTEGER);
+-    VAR i, m: INTEGER; neg: BOOLEAN;
+-      d: ARRAY 12 OF CHAR;
+-  BEGIN
+-    IF x = 0.0 THEN WriteString(W, "  0")
+-    ELSE
+-      IF x < 0.0 THEN x := -x; neg := TRUE ELSE neg := FALSE END ;
+-      IF k > 7 THEN k := 7 END ;
+-      x := Ten(k) * x; m := FLOOR(x + 0.5);
+-      i := 0;
+-      REPEAT d[i] := CHR(m MOD 10 + 30H); m := m DIV 10; INC(i) UNTIL m = 0;
+-      Write(W, " ");
+-      WHILE n > i+3 DO  Write(W, " "); DEC(n) END ;
+-      IF neg THEN Write(W, "-"); DEC(n) ELSE Write(W, " ") END ;
+-      WHILE i > k DO DEC(i); Write(W, d[i]) END ;
+-      Write(W, ".");
+-      WHILE k > i DO DEC(k); Write(W, "0") END ;
+-      WHILE i > 0 DO DEC(i); Write(W, d[i]) END
+-    END
+-  END WriteRealFix;
+ 
+   PROCEDURE WritePair(VAR W: Writer; ch: CHAR; x: LONGINT);
+   BEGIN Write(W, ch);
+--- 1/Tools.Mod.txt
++++ 2/Tools.Mod.txt
+@@ -1,5 +1,5 @@
+ MODULE Tools;   (*NW 22.2.2014*)
+-  IMPORT SYSTEM, Kernel, Files, Modules, Input, Texts, Viewers, MenuViewers, TextFrames, Oberon;
++  IMPORT SYSTEM, Kernel, Files, Texts, Viewers, MenuViewers, TextFrames, Oberon;
+   VAR T: Texts.Text; V: MenuViewers.Viewer; W: Texts.Writer;
+ 
+   PROCEDURE OpenViewer(T: Texts.Text; title: ARRAY OF CHAR);
+--- 1/Viewers.Mod.txt
++++ 2/Viewers.Mod.txt
+@@ -11,8 +11,8 @@
+ 
+     ViewerMsg* = RECORD (Display.FrameMsg)
+         id*: INTEGER;
+-        X*, Y*, W*, H*: INTEGER;
+-        state*: INTEGER
++        Y*, H*: INTEGER;
++        state: INTEGER
+       END;
+ 
+     Track = POINTER TO TrackDesc;
