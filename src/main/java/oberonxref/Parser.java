@@ -124,7 +124,7 @@ public class Parser {
 			}
 			expect(SymbolType.KEYWORD_OF, "missing OF", true);
 			Scope elemTypeScope = parseType(topLevel, linkPrefix + ".ARRAY", false);
-			Scope result = new Scope(null, linkPrefix, currentScope);
+			Scope result = new Scope(null, linkPrefix + ".", currentScope);
 			result.putIdentifier("[]", Type.VARIABLE, elemTypeScope);
 			if (exported) {
 				Scope pubScope = new Scope(null, "@@", currentScope);
@@ -173,7 +173,7 @@ public class Parser {
 						throw new RuntimeException("comma expected");
 				}
 				expect(SymbolType.OP_COLON, "colon expected", true);
-				Scope typeScope = parseType(topLevel, linkPrefix + "." + flds.get(0)[0], flds.stream().anyMatch(f -> f.length == 2));
+				Scope typeScope = parseType(topLevel, linkPrefix + "." + flds.get(0)[0].getText(), flds.stream().anyMatch(f -> f.length == 2));
 				for (Symbol[] fld : flds) {
 					String identifier = fld[0].getText();
 					resultScope.putIdentifier(identifier, Type.VARIABLE, typeScope);
@@ -232,7 +232,7 @@ public class Parser {
 				throw new RuntimeException("Anonymous procedure types are not supported");
 			nextSym++;
 			Scope oldScope = currentScope;
-			currentScope = new Scope(currentScope, linkPrefix + ".", currentScope);
+			currentScope = new Scope(currentScope, linkPrefix + ".PROCEDURE.", currentScope);
 			parseProcedureType(linkPrefix + ".PROCEDURE");
 			currentScope = oldScope;
 			Scope result = new Scope(null, linkPrefix + "()", currentScope);
@@ -382,13 +382,13 @@ public class Parser {
 		} else if (sym() == SymbolType.KEYWORD_ARRAY) {
 			nextSym++;
 			expect(SymbolType.KEYWORD_OF, "OF ?", true);
-			Scope result = new Scope(null, linkPrefix, currentScope);
+			Scope result = new Scope(null, linkPrefix + ".", currentScope);
 			result.putIdentifier("[]", Type.VARIABLE, parseFormalType(linkPrefix + ".ARRAY"));
 			return result;
 		} else if (sym() == SymbolType.KEYWORD_PROCEDURE) {
 			nextSym++;
 			Scope oldScope = currentScope;
-			currentScope = new Scope(currentScope, linkPrefix, currentScope);
+			currentScope = new Scope(currentScope, linkPrefix + ".", currentScope);
 			parseProcedureType(linkPrefix + ".PROCEDURE");
 			currentScope = oldScope;
 			Scope result = new Scope(null, "@@", null);
@@ -611,7 +611,7 @@ public class Parser {
 		nextSym++;
 		checkExport(procid);
 		Scope oldScope = currentScope;
-		currentScope = new Scope(currentScope, procid + ".", currentScope);
+		currentScope = new Scope(currentScope, procid + ".PROCEDURE.", currentScope);
 		parseProcedureType(procid + ".PROCEDURE");
 		expect(SymbolType.OP_SEMICOLON, "no ;", true);
 		parseDeclarations();
