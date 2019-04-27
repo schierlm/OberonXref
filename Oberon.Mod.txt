@@ -10,8 +10,8 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
   TYPE Painter* = PROCEDURE (x, y: INTEGER);
     Marker* = RECORD Fade*, Draw*: Painter END;
     
-    Cursor* = RECORD
-        marker*: Marker; on*: BOOLEAN; X*, Y*: INTEGER
+    Cursor = RECORD
+        marker: Marker; on: BOOLEAN; X, Y: INTEGER
     END;
 
     InputMsg* = RECORD (Display.FrameMsg)
@@ -20,7 +20,7 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
       X*, Y*: INTEGER;
       ch*: CHAR;
       fnt*: Fonts.Font;
-      col*, voff*: INTEGER
+      col*: INTEGER
     END;
 
     SelectionMsg* = RECORD (Display.FrameMsg)
@@ -48,7 +48,7 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
     END;
 
   VAR User*: ARRAY 8 OF CHAR; Password*: LONGINT;
-    Arrow*, Star*: Marker;
+    Arrow, Star: Marker;
     Mouse, Pointer: Cursor;
     FocusViewer*: Viewers.Viewer;
     Log*: Texts.Text;
@@ -60,8 +60,8 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
       pos*: LONGINT
     END;
 
-    CurFnt*: Fonts.Font;
-    CurCol*, CurOff*: INTEGER;
+    CurFnt: Fonts.Font;
+    CurCol*: INTEGER;
     NofTasks*: INTEGER;
 
     CurTask: Task;
@@ -185,10 +185,10 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
     END
   END HandleFiller;
 
-  PROCEDURE OpenDisplay* (UW, SW, H: INTEGER);
+  PROCEDURE OpenDisplay (UW, SW, H: INTEGER);
     VAR Filler: Viewers.Viewer;
   BEGIN
-     Input.SetMouseLimits(Viewers.curW + UW + SW, H);
+     Input.SetMouseHeightLimit(H);
      Display.ReplConst(Display.black, Viewers.curW, 0, UW + SW, H, Display.replace);
      NEW(Filler); Filler.handle := HandleFiller;
      Viewers.InitTrack(UW, H, Filler); (*init user track*)
@@ -214,10 +214,6 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
   PROCEDURE UserTrack* (X: INTEGER): INTEGER;
   BEGIN RETURN X DIV DW * DW
   END UserTrack;
-
-  PROCEDURE SystemTrack* (X: INTEGER): INTEGER;
-  BEGIN RETURN X DIV DW * DW + DW DIV 8 * 5
-  END SystemTrack;
 
   PROCEDURE UY (X: INTEGER): INTEGER;
     VAR h: INTEGER;
@@ -353,11 +349,7 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
   BEGIN CurCol := col
   END SetColor;
 
-  PROCEDURE SetOffset* (voff: INTEGER);
-  BEGIN CurOff := voff
-  END SetOffset;
-
-  PROCEDURE Loop*;
+  PROCEDURE Loop;
     VAR V: Viewers.Viewer; M: InputMsg; N: ControlMsg;
        prevX, prevY, X, Y, t: INTEGER; keys: SET; ch: CHAR;
   BEGIN
@@ -368,7 +360,7 @@ MODULE Oberon; (*JG 6.9.90 / 23.9.93 / 13.8.94 / NW 14.4.2013 / 22.12.2015*)
           N.id := neutralize; Viewers.Broadcast(N); FadeCursor(Pointer); LED(0)
         ELSIF ch = SETSTAR THEN
           N.id := mark; N.X := X; N.Y := Y; V := Viewers.This(X, Y); V.handle(V, N)
-        ELSE M.id := consume; M.ch := ch; M.fnt := CurFnt; M.col := CurCol; M.voff := CurOff;
+        ELSE M.id := consume; M.ch := ch; M.fnt := CurFnt; M.col := CurCol;
           FocusViewer.handle(FocusViewer, M); DEC(ActCnt)
         END
       ELSIF keys # {} THEN
@@ -404,7 +396,7 @@ BEGIN User[0] := 0X;
   DW := Display.Width; DH := Display.Height; CL := DW;
   OpenDisplay(DW DIV 8 * 5, DW DIV 8 * 3, DH);
   FocusViewer := Viewers.This(0, 0);
-  CurFnt := Fonts.Default; CurCol := Display.white; CurOff := 0;
+  CurFnt := Fonts.Default; CurCol := Display.white;
 
   ActCnt := 0; CurTask := NewTask(GC, 1000); Install(CurTask);
   Modules.Load("System", Mod); Mod := NIL; Loop

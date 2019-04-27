@@ -1,5 +1,5 @@
 MODULE FileDir;   (*NW 12.1.86 / 23.8.90 / 15.8.2013*)
-  IMPORT SYSTEM, Kernel;
+  IMPORT Kernel;
 
   (*File Directory is a B-tree with its root page at DirRootAdr.
     Each entry contains a file name and the disk address of the file's head sector*)
@@ -10,10 +10,10 @@ MODULE FileDir;   (*NW 12.1.86 / 23.8.90 / 15.8.2013*)
         SectorSize*   = 1024;
         IndexSize*   = SectorSize DIV 4;
         HeaderSize*  = 352;
-        DirRootAdr*  = 29;
-        DirPgSize*   = 24;
+        DirRootAdr  = 29;
+        DirPgSize   = 24;
         N = DirPgSize DIV 2;
-        DirMark*    = 9B1EA38DH;
+        DirMark    = 9B1EA38DH;
         HeaderMark* = 9BA71D86H;
         FillerSize = 52;
 
@@ -21,7 +21,7 @@ MODULE FileDir;   (*NW 12.1.86 / 23.8.90 / 15.8.2013*)
     FileName*       = ARRAY FnLength OF CHAR;
     SectorTable*    = ARRAY SecTabSize OF DiskAdr;
     ExtensionTable* = ARRAY ExTabSize OF DiskAdr;
-    EntryHandler*   = PROCEDURE (name: FileName; sec: DiskAdr; VAR continue: BOOLEAN);
+    EntryHandler   = PROCEDURE (name: FileName; sec: DiskAdr; VAR continue: BOOLEAN);
 
     FileHeader* =
       RECORD (*first page of each file on disk*)
@@ -37,19 +37,19 @@ MODULE FileDir;   (*NW 12.1.86 / 23.8.90 / 15.8.2013*)
     IndexSector* = ARRAY IndexSize OF DiskAdr;
     DataSector* = ARRAY SectorSize OF BYTE;
 
-    DirEntry* =  (*B-tree node*)
+    DirEntry =  (*B-tree node*)
       RECORD
-        name*: FileName;
-        adr*:  DiskAdr; (*sec no of file header*)
-        p*:    DiskAdr  (*sec no of descendant in directory*)
+        name: FileName;
+        adr:  DiskAdr; (*sec no of file header*)
+        p:    DiskAdr  (*sec no of descendant in directory*)
       END ;
 
-    DirPage*  =
-      RECORD mark*:  INTEGER;
-        m*:     INTEGER;
-        p0*:    DiskAdr;  (*sec no of left descendant in directory*)
+    DirPage  =
+      RECORD mark:  INTEGER;
+        m:     INTEGER;
+        p0:    DiskAdr;  (*sec no of left descendant in directory*)
         fill:  ARRAY FillerSize OF BYTE;
-        e*:  ARRAY DirPgSize OF DirEntry
+        e:  ARRAY DirPgSize OF DirEntry
       END ;
 
   (*Exported procedures: Search, Insert, Delete, Enumerate, Init*)

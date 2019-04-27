@@ -1,7 +1,7 @@
 MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
-  IMPORT SYSTEM, Files, Modules, Fonts, (*Printer,*) Texts, Oberon;
+  IMPORT Files, Modules, Fonts, Texts, Oberon;
 
-  CONST NameLen* = 32; GraphFileId = 0FAX; LibFileId = 0FBX;
+  CONST NameLen = 32; GraphFileId = 0FAX; LibFileId = 0FBX;
 
   TYPE
     Graph* = POINTER TO GraphDesc;
@@ -15,7 +15,7 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     ObjectDesc* = RECORD
         x*, y*, w*, h*: INTEGER;
         col*: BYTE;
-        selected*, marked*: BOOLEAN;
+        selected*, marked: BOOLEAN;
         do*: Method;
         next: Object
       END ;
@@ -33,25 +33,22 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
       END ;
 
     MacHead* = POINTER TO MacHeadDesc;
-    MacExt* = POINTER TO MacExtDesc;
     Library* = POINTER TO LibraryDesc;
 
     MacHeadDesc* = RECORD
         name*: Name;
         w*, h*: INTEGER;
-        ext*: MacExt;
-        lib*: Library;
+        unused: INTEGER;
+        lib: Library;
         first: Object;
         next: MacHead
       END ;
 
     LibraryDesc* = RECORD
-        name*: Name;
+        name: Name;
         first: MacHead;
         next: Library
       END ;
-
-    MacExtDesc* = RECORD END ;
 
     Context* = RECORD
         nofonts, noflibs, nofclasses: INTEGER;
@@ -68,11 +65,10 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
         selectable*: PROCEDURE (obj: Object; x, y: INTEGER): BOOLEAN;
         read*: PROCEDURE (obj: Object; VAR R: Files.Rider; VAR C: Context);
         write*: PROCEDURE (obj: Object; cno: INTEGER; VAR R: Files.Rider; VAR C: Context);
-        print*: PROCEDURE (obj: Object; x, y: INTEGER)
       END ;
 
     LineDesc* = RECORD (ObjectDesc)
-        unused*: INTEGER
+        unused: INTEGER
       END ;
 
     CaptionDesc* = RECORD (ObjectDesc)
@@ -83,7 +79,7 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
         mac*: MacHead
       END ;
 
-  VAR width*, res*: INTEGER;
+  VAR width*: INTEGER;
     new: Object;
     T*: Texts.Text;  (*captions*)
     LineMethod*, CapMethod*, MacMethod* : Method;
@@ -132,18 +128,6 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
   BEGIN obj := G.first;
     WHILE obj # NIL DO obj.do.draw(obj, M); obj := obj.next END
   END Draw;
-
-  PROCEDURE List*(G: Graph);
-    VAR obj: Object; tag: INTEGER;
-  BEGIN obj := G.first;
-    WHILE obj # NIL DO
-      Texts.Write(XW, 9X); Texts.WriteHex(XW, ORD(obj)); Texts.Write(XW, 9X);
-      Texts.WriteInt(XW, obj.x, 5); Texts.WriteInt(XW, obj.y, 5); Texts.WriteInt(XW, obj.w, 5); Texts.WriteInt(XW, obj.h, 5);
-      Texts.Write(XW, "/"); SYSTEM.GET(ORD(obj)-8, tag); Texts.WriteHex(XW, tag);
-      SYSTEM.GET(ORD(obj)-4, tag); Texts.WriteHex(XW, tag); Texts.WriteLn(XW); obj := obj.next
-    END ;
-    Texts.Append(Oberon.Log, XW.buf)
-  END List;
 
   (*----------------procedures operating on selection -------------------*)
 
@@ -251,7 +235,7 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     C.class[1] := LineMethod.new; C.class[2] := CapMethod.new; C.class[3] := MacMethod.new
   END InitContext;
 
-  PROCEDURE FontNo*(VAR W: Files.Rider; VAR C: Context; fnt: Fonts.Font): INTEGER;
+  PROCEDURE FontNo(VAR W: Files.Rider; VAR C: Context; fnt: Fonts.Font): INTEGER;
     VAR fno: INTEGER;
   BEGIN fno := 0;
     WHILE (fno < C.nofonts) & (C.font[fno] # fnt) DO INC(fno) END ;
@@ -278,11 +262,6 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     Files.WriteByte(W, 255)
   END StoreElems;
 
-  PROCEDURE Store*(G: Graph; VAR W: Files.Rider);
-    VAR C: Context;
-  BEGIN InitContext(C); StoreElems(W, C, G.first); G.changed := FALSE
-  END Store;
-
   PROCEDURE WriteObj*(VAR W: Files.Rider; cno: INTEGER; obj: Object);
   BEGIN Files.WriteByte(W, cno); Files.WriteInt(W, obj.y * 10000H + obj.x);
     Files.WriteInt(W, obj.h * 10000H + obj.w); Files.WriteByte(W, obj.col)
@@ -294,15 +273,9 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     InitContext(C); StoreElems(W, C, G.first); Files.Register(F)
   END WriteFile;
 
-  PROCEDURE Print*(G: Graph; x0, y0: INTEGER);
-    VAR obj: Object;
-  BEGIN obj := G.first;
-    WHILE obj # NIL DO obj.do.print(obj, x0, y0); obj := obj.next END
-  END Print;
-
   (* ---------------------- Loading ------------------------ *)
 
-  PROCEDURE GetClass*(module, allocator: ARRAY OF CHAR; VAR com: Modules.Command);
+  PROCEDURE GetClass(module, allocator: ARRAY OF CHAR; VAR com: Modules.Command);
     VAR mod: Modules.Module;
   BEGIN Modules.Load(module, mod);
     IF mod # NIL THEN
@@ -311,11 +284,6 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     ELSE WMsg(module, " not available"); com := NIL
     END
   END GetClass;
-
-  PROCEDURE Font*(VAR R: Files.Rider; VAR C: Context): Fonts.Font;
-    VAR fno: BYTE;
-  BEGIN Files.ReadByte(R, fno); RETURN C.font[fno]
-  END Font;
 
   PROCEDURE ReadObj(VAR R: Files.Rider; obj: Object);
     VAR xy, wh: INTEGER; dmy: BYTE;
@@ -349,19 +317,13 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     new := NIL; fobj := obj
   END LoadElems;
 
-  PROCEDURE Load*(G: Graph; VAR R: Files.Rider);
-    VAR C: Context;
-  BEGIN G.sel := NIL; InitContext(C); LoadElems(R, C, G.first)
-  END Load;
-
   PROCEDURE Open*(G: Graph; name: ARRAY OF CHAR);
     VAR tag: CHAR;
       F: Files.File; R: Files.Rider; C: Context;
   BEGIN G.first := NIL; G.sel := NIL; G.time := 0; G.changed := FALSE; F := Files.Old(name);
     IF F # NIL THEN
       Files.Set(R, F, 0); Files.Read(R, tag);
-      IF tag = GraphFileId THEN InitContext(C); LoadElems(R, C, G.first); res := 0 ELSE res := 1 END
-    ELSE res := 2
+      IF tag = GraphFileId THEN InitContext(C); LoadElems(R, C, G.first) END
     END
   END Open;
 
@@ -480,7 +442,7 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
       WHILE obj # NIL DO
         obj.x := obj.x - x0; obj.y := obj.y - y0; obj := obj.next
       END ;
-      NEW(mh); mh.w := x1 - x0; mh.h := y1 - y0; mh.first := last; mh.ext := NIL;
+      NEW(mh); mh.w := x1 - x0; mh.h := y1 - y0; mh.first := last;
       new := NIL; head := mh
   END MakeMac;
 
@@ -531,13 +493,6 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
   BEGIN WriteObj(W, cno, obj)
   END WriteLine;
 
-(*PROCEDURE PrintLine(obj: Object; x, y: INTEGER);
-    VAR w, h: INTEGER;
-  BEGIN w := obj.w * 2; h := obj.h * 2;
-    IF w < h THEN h := 2*h ELSE w := 2*w END ;
-    Printer.ReplConst(obj.x * 4 + x, obj.y *4 + y, w, h)
-  END PrintLine; *)
-
   (* ---------------------- Caption Methods ------------------------ *)
 
   PROCEDURE NewCaption;
@@ -570,7 +525,7 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
         INC(w, dx); INC(len); Texts.Read(R, ch)
       END ;
       INC(obj.y, fnt.minY-dy); obj.w := w; obj.h := fnt.height;
-      Texts.ChangeLooks(T, pos, pos+len, {0}, fnt, 0 , 0) |
+      Texts.ChangeLooks(T, pos, pos+len, {0}, fnt, 0) |
     ColorMsg: obj.col := M(ColorMsg).col
     END
   END ChangeCaption;
@@ -600,21 +555,6 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
       Files.Write(W, 0X)
     END
   END WriteCaption;
-
-(*  PROCEDURE PrintCaption(obj: Object; x, y: INTEGER);
-    VAR fnt: Fonts.Font;
-      i: INTEGER; ch: CHAR;
-      R: Texts.Reader;
-      s: ARRAY 128 OF CHAR;
-  BEGIN
-    IF obj(Caption).len > 0 THEN
-      Texts.OpenReader(R, T, obj(Caption).pos); Texts.Read(R, ch);
-      fnt := R.fnt; DEC(y, fnt.minY*4); i := 0;
-      WHILE ch >= " " DO s[i] := ch; INC(i); Texts.Read(R, ch) END ;
-      s[i] := 0X;
-      IF i > 0 THEN Printer.String(obj.x*4 + x, obj.y*4 + y, s, fnt.name) END
-    END
-  END PrintCaption; *)
 
   (* ---------------------- Macro Methods ------------------------ *)
 
@@ -655,14 +595,6 @@ MODULE Graphics;   (*NW 21.12.89 / 18.11.201 / 8.4.2016*)
     WriteObj(W1, cno, obj); Files.WriteByte(W1, lno); Files.WriteString(W1, obj(Macro).mac.name)
   END WriteMacro;
 
-(*  PROCEDURE PrintMacro(obj: Object; x, y: INTEGER);
-    VAR elem: Object; mh: MacHead;
-  BEGIN mh := obj(Macro).mac;
-    IF mh # NIL THEN elem := mh.first;
-      WHILE elem # NIL DO elem.do.print(elem, obj.x*4 + x, obj.y*4 + y); elem := elem.next END
-    END
-  END PrintMacro; *)
-
   PROCEDURE Notify(T: Texts.Text; op: INTEGER; beg, end: LONGINT);
   BEGIN
   END Notify;
@@ -676,11 +608,11 @@ BEGIN Texts.OpenWriter(W); Texts.OpenWriter(TW);  Texts.OpenWriter(XW);
   NEW(T); Texts.Open(T, ""); T.notify := Notify;
   NEW(LineMethod); LineMethod.new := NewLine; LineMethod.copy := CopyLine;
   LineMethod.selectable := LineSelectable; LineMethod.change := ChangeLine;
-  LineMethod.read := ReadLine; LineMethod.write := WriteLine; (*LineMethod.print := PrintLine;*)
+  LineMethod.read := ReadLine; LineMethod.write := WriteLine;
   NEW(CapMethod); CapMethod.new := NewCaption; CapMethod.copy := CopyCaption;
   CapMethod.selectable := CaptionSelectable; CapMethod.change := ChangeCaption;
-  CapMethod.read := ReadCaption; CapMethod.write := WriteCaption; (*CapMethod.print := PrintCaption;*)
+  CapMethod.read := ReadCaption; CapMethod.write := WriteCaption;
   NEW(MacMethod); MacMethod.new := NewMacro; MacMethod.copy := CopyMacro;
   MacMethod.selectable := MacroSelectable; MacMethod.change := ChangeMacro;
-  MacMethod.read := ReadMacro; MacMethod.write := WriteMacro; (*MacMethod.print := PrintMacro*)
+  MacMethod.read := ReadMacro; MacMethod.write := WriteMacro;
 END Graphics.

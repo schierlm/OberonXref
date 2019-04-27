@@ -5,8 +5,7 @@ MODULE Input; (*NW 5.10.86 / 15.11.90 Ceres-2; PDR 21.4.12 / NW 15.5.2013 Ceres-
   VAR kbdCode: BYTE; (*last keyboard code read*)
     Recd, Up, Shift, Ctrl, Ext: BOOLEAN;
     KTabAdr: INTEGER;  (*keyboard code translation table*)
-    MW, MH, MX, MY: INTEGER; (*mouse limits and coords*)
-    MK: SET; (*mouse keys*)
+    MH: INTEGER; (*mouse limits and coords*)
 
 (*FIFO implemented in hardware, because every read must be handled,
   including tracking the state of the Shift and Ctrl keys*)
@@ -50,11 +49,11 @@ MODULE Input; (*NW 5.10.86 / 15.11.90 Ceres-2; PDR 21.4.12 / NW 15.5.2013 Ceres-
     IF y >= MH THEN y := MH-1 END
   END Mouse;
 
-  PROCEDURE SetMouseLimits*(w, h: INTEGER);
-  BEGIN MW := w; MH := h
-  END SetMouseLimits;
+  PROCEDURE SetMouseHeightLimit*(h: INTEGER);
+  BEGIN MH := h
+  END SetMouseHeightLimit;
 
-  PROCEDURE Init*;
+  PROCEDURE Init;
   BEGIN Up := FALSE; Shift := FALSE; Ctrl := FALSE; Recd := FALSE;
     KTabAdr := SYSTEM.ADR($
       00 00 00 00 00 1A 00 00  00 00 00 00 00 09 60 00

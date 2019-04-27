@@ -1,5 +1,5 @@
 MODULE Stars;   (*NW 15.1.2013, 15.11.2013*)
-  IMPORT SYSTEM, Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
+  IMPORT Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
 
   CONST N = 6;  (*nof stars*)
     w = 16;   (*width of star*)

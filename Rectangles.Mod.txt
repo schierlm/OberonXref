@@ -1,14 +1,14 @@
 MODULE Rectangles;  (*NW 25.2.90 / 18.4.2013*)
-  IMPORT SYSTEM, Display, Files, Input, Texts, Oberon, Graphics, GraphicFrames;
+  IMPORT SYSTEM, Display, Files, Oberon, Graphics, GraphicFrames;
 
   TYPE
-    Rectangle* = POINTER TO RectDesc;
-    RectDesc* = RECORD (Graphics.ObjectDesc)
-        lw*, vers*: INTEGER
+    Rectangle = POINTER TO RectDesc;
+    RectDesc = RECORD (Graphics.ObjectDesc)
+        lw, vers: INTEGER
       END ;
 
-  VAR method*: Graphics.Method;
-    tack*, grey*: INTEGER;
+  VAR method: Graphics.Method;
+    tack, grey: INTEGER;
 
   PROCEDURE New*;
     VAR r: Rectangle;
@@ -78,17 +78,6 @@ MODULE Rectangles;  (*NW 25.2.90 / 18.4.2013*)
     Files.WriteByte(W, obj(Rectangle).lw); Files.WriteByte(W, obj(Rectangle).vers)
   END Write;
 
-(* PROCEDURE Print(obj: Graphics.Object; x, y: INTEGER);
-    VAR w, h, lw, s: INTEGER;
-  BEGIN INC(x, obj.x * 4); INC(y, obj.y * 4); w := obj.w * 4; h := obj.h * 4;
-    lw := obj(Rectangle).lw * 2; s := obj(Rectangle).vers;
-    Printer.ReplConst(x, y, w, lw);
-    Printer.ReplConst(x+w-lw, y, lw, h);
-    Printer.ReplConst(x, y+h-lw, w, lw);
-    Printer.ReplConst(x, y, lw, h);
-    IF s > 0 THEN Printer.ReplPattern(x, y, w, h, s) END
-  END Print; *)
-
   PROCEDURE Make*;  (*command*)
     VAR x0, x1, y0, y1: INTEGER;
       R: Rectangle;
@@ -112,7 +101,7 @@ BEGIN NEW(method);
   method.module := "Rectangles"; method.allocator := "New";
   method.new := New; method.copy := Copy; method.draw := Draw;
   method.selectable := Selectable; method.change := Change;
-  method.read := Read; method.write := Write; (*method.print := Print*)
+  method.read := Read; method.write := Write;
   tack := SYSTEM.ADR($0707 4122 1408 1422 4100$);
   grey := SYSTEM.ADR($2004 0000 1111 1111 0000 0000 4444 4444 0000 0000$)
 END Rectangles.

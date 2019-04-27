@@ -9,12 +9,12 @@ MODULE Modules;  (*Link and load on RISC; NW 20.10.2013 / 8.1.2019*)
     ModDesc* = RECORD
         name*: ModuleName;
         next*: Module;
-        key*, num*, size*, refcnt*: INTEGER;
-        data*, code*, imp*, cmd*, ent*, ptr*, unused: INTEGER  (*addresses*)
+        key, num, size, refcnt*: INTEGER;
+        data, code*, imp*, cmd*, ent, ptr*, unused: INTEGER  (*addresses*)
       END ;
 
   VAR root*, M: Module;
-    MTOrg*, AllocPtr*, res*: INTEGER;
+    MTOrg, AllocPtr*, res*: INTEGER;
     importing*, imported*: ModuleName;
     limit: INTEGER;
 
@@ -215,7 +215,7 @@ MODULE Modules;  (*Link and load on RISC; NW 20.10.2013 / 8.1.2019*)
     END
   END Free;
 
-  PROCEDURE Init*;
+  PROCEDURE Init;
   BEGIN Files.Init; MTOrg := SYSTEM.REG(MT);
     SYSTEM.GET(16, AllocPtr); SYSTEM.GET(20, root); SYSTEM.GET(24, limit); DEC(limit, 8000H)
   END Init;

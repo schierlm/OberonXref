@@ -47,12 +47,6 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     IF S.class = Texts.Int THEN Oberon.SetColor(S.i) END
   END SetColor;
 
-  PROCEDURE SetOffset*;
-    VAR S: Texts.Scanner;
-  BEGIN GetArg(S);
-    IF S.class = Texts.Int THEN Oberon.SetOffset(S.i) END
-  END SetOffset;
-  
   PROCEDURE Date*;
     VAR S: Texts.Scanner;
       dt, hr, min, sec, yr, mo, day: LONGINT;
@@ -376,22 +370,6 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     main := TextFrames.NewText(TextFrames.Text("System.Tool"), 0);
     toolV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y)
   END OpenViewers;
-
-  PROCEDURE ExtendDisplay*;
-    VAR V: Viewers.Viewer;
-      X, Y, DX, DW, DH: INTEGER;
-      S: Texts.Scanner;
-  BEGIN GetArg(S);
-    IF S.class = Texts.Name THEN
-      DX := Viewers.curW; DW := Oberon.DisplayWidth(DX); DH := Oberon.DisplayHeight(DX);
-      Oberon.OpenDisplay(DW DIV 8 * 5, DW DIV 8 * 3, DH);
-      Oberon.AllocateSystemViewer(DX, X, Y);
-      V := MenuViewers.New(
-        TextFrames.NewMenu(S.s, StandardMenu),
-        TextFrames.NewText(TextFrames.Text(S.s), 0),
-        TextFrames.menuH, X, Y)
-    END
-  END ExtendDisplay;
 
   PROCEDURE Trap(VAR a: INTEGER; b: INTEGER);
     VAR u, v, w: INTEGER; mod: Modules.Module;

@@ -1,16 +1,16 @@
 MODULE Kernel;  (*NW/PR  11.4.86 / 27.12.95 / 4.2.2014*)
   IMPORT SYSTEM;
-  CONST SectorLength* = 1024;
+  CONST SectorLength = 1024;
     timer = -64; spiData = -48; spiCtrl = -44;
     CARD0 = 1; SPIFAST = 4;
     FSoffset = 80000H; (*256MB in 512-byte blocks*)
     mapsize = 10000H; (*1K sectors, 64MB*)
 
-  TYPE Sector* = ARRAY SectorLength OF BYTE;
+  TYPE Sector = ARRAY SectorLength OF BYTE;
 
   VAR allocated*, NofSectors*: INTEGER;
     heapOrg*, heapLim*: INTEGER; 
-    stackOrg* ,  stackSize*, MemLim*: INTEGER;
+    stackOrg*: INTEGER;
     clock: INTEGER;
     list0, list1, list2, list3: INTEGER;  (*lists of free blocks of size n*256, 128, 64, 32 bytes*)
     data: INTEGER; (*SPI data in*)
@@ -194,7 +194,7 @@ MODULE Kernel;  (*NW/PR  11.4.86 / 27.12.95 / 4.2.2014*)
     ASSERT(data MOD 32 = 5); SPIIdle(1) (*deselect card*)
   END WriteSD;
 
-  PROCEDURE InitSecMap*;
+  PROCEDURE InitSecMap;
     VAR i: INTEGER;
   BEGIN NofSectors := 0; sectorMap[0] := {0 .. 31}; sectorMap[1] := {0 .. 31};
     FOR i := 2 TO mapsize DIV 32 - 1 DO sectorMap[i] := {} END
@@ -204,11 +204,6 @@ MODULE Kernel;  (*NW/PR  11.4.86 / 27.12.95 / 4.2.2014*)
   BEGIN sec := sec DIV 29; ASSERT(SYSTEM.H(0) = 0);
     INCL(sectorMap[sec DIV 32], sec MOD 32); INC(NofSectors)
   END MarkSector;
-
-  PROCEDURE FreeSector*(sec: INTEGER);
-  BEGIN sec := sec DIV 29; ASSERT(SYSTEM.H(0) = 0);
-    EXCL(sectorMap[sec DIV 32], sec MOD 32); DEC(NofSectors)
-  END FreeSector;
 
   PROCEDURE AllocSector*(hint: INTEGER; VAR sec: INTEGER);
     VAR s: INTEGER;
@@ -261,8 +256,8 @@ MODULE Kernel;  (*NW/PR  11.4.86 / 27.12.95 / 4.2.2014*)
 
   PROCEDURE Init*;
   BEGIN Install(SYSTEM.ADR(Trap), 20H);  (*install temporary trap*)
-    SYSTEM.GET(12, MemLim); SYSTEM.GET(24, heapOrg);
-    stackOrg := heapOrg; stackSize := 8000H; heapLim := MemLim;
+    SYSTEM.GET(12, heapLim); SYSTEM.GET(24, heapOrg);
+    stackOrg := heapOrg;
     list1 := 0; list2 := 0; list3 := 0; list0 := heapOrg;
     SYSTEM.PUT(list0, heapLim - heapOrg); SYSTEM.PUT(list0+4, -1); SYSTEM.PUT(list0+8, 0);
     allocated := 0; clock := 0; InitSecMap

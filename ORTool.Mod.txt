@@ -1,5 +1,5 @@
 MODULE ORTool;  (*NW 18.2.2013*)
-  IMPORT SYSTEM, Files, Texts, Oberon, ORB;
+  IMPORT Files, Texts, Oberon, ORB;
   VAR W: Texts.Writer;
     Form: INTEGER;  (*result of ReadType*)
     mnemo0, mnemo1: ARRAY 16, 4 OF CHAR;  (*mnemonics*)
@@ -11,8 +11,8 @@ MODULE ORTool;  (*NW 18.2.2013*)
   END Read;
 
   PROCEDURE ReadType(VAR R: Files.Rider);
-    VAR key, len, lev, size, off: INTEGER;
-      ref, mno, class, form, readonly: INTEGER;
+    VAR key, len, size, off: INTEGER;
+      ref, class, form, readonly: INTEGER;
       name, modname: ARRAY 32 OF CHAR;
   BEGIN Read(R, ref); Texts.Write(W, " "); Texts.Write(W, "[");
     IF ref < 0 THEN Texts.Write(W, "^"); Texts.WriteInt(W, -ref, 1)
@@ -57,7 +57,7 @@ MODULE ORTool;  (*NW 18.2.2013*)
   END ReadType;
 
   PROCEDURE DecSym*;  (*decode symbol file*)
-    VAR class, typno, k: INTEGER;
+    VAR class, k: INTEGER;
       name: ARRAY 32 OF CHAR;
       F: Files.File; R: Files.Rider;
       S: Texts.Scanner;
@@ -108,7 +108,7 @@ MODULE ORTool;  (*NW 18.2.2013*)
   END WriteReg;
 
   PROCEDURE opcode(w: LONGINT);
-    VAR k, op, u, a, b, c: LONGINT;
+    VAR k, op, u, a, b: LONGINT;
   BEGIN
       k := w DIV 40000000H MOD 4;
       a := w DIV 1000000H MOD 10H;
@@ -142,17 +142,8 @@ MODULE ORTool;  (*NW 18.2.2013*)
       END
   END opcode;
 
-  PROCEDURE Sync(VAR R: Files.Rider);
-    VAR ch: CHAR;
-  BEGIN Files.Read(R, ch); Texts.WriteString(W, "Sync "); Texts.Write(W, ch); Texts.WriteLn(W)
-  END Sync;
-  
-  PROCEDURE Write(VAR R: Files.Rider; x: INTEGER);
-  BEGIN Files.WriteByte(R, x)  (* -128 <= x < 128 *)
-  END Write;
-
   PROCEDURE DecObj*;   (*decode object file*)
-    VAR class, i, n, key, size, fix, adr, data, len: INTEGER;
+    VAR class, i, n, key, size, adr, data: INTEGER;
       ch: CHAR;
       name: ARRAY 32 OF CHAR;
       F: Files.File; R: Files.Rider;
@@ -170,7 +161,6 @@ MODULE ORTool;  (*NW 18.2.2013*)
           Files.ReadInt(R, key); Texts.WriteHex(W, key); Texts.WriteLn(W);
           Files.ReadString(R, name)
         END ;
-      (* Sync(R); *)
         Texts.WriteString(W, "type descriptors"); Texts.WriteLn(W);
         Files.ReadInt(R, n); n := n DIV 4; i := 0;
         WHILE i < n DO Files.ReadInt(R, data); Texts.WriteHex(W, data); INC(i) END ;
@@ -186,7 +176,6 @@ MODULE ORTool;  (*NW 18.2.2013*)
           Files.ReadInt(R, data); Texts.WriteInt(W, i, 4); Texts.Write(W, 9X); Texts.WriteHex(W, data);
           Texts.Write(W, 9X); opcode(data); Texts.WriteLn(W); INC(i)
         END ;
-      (* Sync(R); *)
         Texts.WriteString(W, "commands:"); Texts.WriteLn(W);
         Files.ReadString(R, name);
         WHILE name[0] # 0X DO
@@ -194,25 +183,21 @@ MODULE ORTool;  (*NW 18.2.2013*)
           Files.ReadInt(R, adr); Texts.WriteInt(W, adr, 5); Texts.WriteLn(W);
           Files.ReadString(R, name)
         END ;
-      (* Sync(R); *)
         Texts.WriteString(W, "entries"); Texts.WriteLn(W);
         Files.ReadInt(R, n); i := 0;
         WHILE i < n DO
           Files.ReadInt(R, adr); Texts.WriteInt(W, adr, 6); INC(i)
         END ;
         Texts.WriteLn(W);
-      (* Sync(R); *)
         Texts.WriteString(W, "pointer refs"); Texts.WriteLn(W); Files.ReadInt(R, adr);
         WHILE adr # -1 DO Texts.WriteInt(W, adr, 6); Files.ReadInt(R, adr) END ;
         Texts.WriteLn(W);
-      (* Sync(R); *)
         Files.ReadInt(R, data); Texts.WriteString(W, "fixP = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
         Files.ReadInt(R, data); Texts.WriteString(W, "fixD = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
         Files.ReadInt(R, data); Texts.WriteString(W, "fixT = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
         Files.ReadInt(R, data); Texts.WriteString(W, "entry = "); Texts.WriteInt(W, data, 8); Texts.WriteLn(W);
         Files.Read(R, ch);
         IF ch # "O" THEN Texts.WriteString(W, "format eror"); Texts.WriteLn(W) END
-      (* Sync(R); *)
       ELSE Texts.WriteString(W, " not found"); Texts.WriteLn(W)
       END ;
       Texts.Append(Oberon.Log, W.buf)

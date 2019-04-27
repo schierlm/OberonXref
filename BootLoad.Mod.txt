@@ -3,7 +3,7 @@ MODULE* BootLoad;  (*NW 20.10.2013 / PR 4.2.2014; boot from SDHC disk or line*)
   (* sw0: init SD; sw1: line|disk*)
   CONST MT = 12; SP = 14; LNK = 15;
     MTOrg = 20H; MemLim = 0E7EF0H; stackOrg = 80000H;
-    swi = -60; led = -60; rsData = -56; rsCtrl = -52;
+    swi = -60; rsData = -56; rsCtrl = -52;
     spiData = -48; spiCtrl = -44;
     CARD0 = 1; SPIFAST = 4;
     FSoffset = 80000H;   (*block offset*)

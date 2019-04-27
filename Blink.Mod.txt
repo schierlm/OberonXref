@@ -1,5 +1,5 @@
 MODULE Blink;   (*NW 30.5.2013*)
-  IMPORT SYSTEM, Oberon;
+  IMPORT Oberon;
   VAR z: INTEGER;
     T: Oberon.Task;
   

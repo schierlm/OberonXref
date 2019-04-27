@@ -15,7 +15,7 @@ SubPacket;
     END ;
 
   VAR
-    filter*: BOOLEAN; Adr*: BYTE; rcvd: INTEGER;
+    filter: BOOLEAN; Adr: BYTE; rcvd: INTEGER;
     rx: RECORD
       hd: Header;
       dat: ARRAY MaxPacket-HdrSize OF BYTE

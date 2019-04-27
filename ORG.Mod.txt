@@ -16,7 +16,7 @@ MODULE ORG; (* N.Wirth, 16.4.2016 / 4.4.2017 / 17.9.2018  Oberon compiler; code 
     Fad = 12; Fsb = 13; Fml = 14; Fdv = 15;
     Ldr = 8; Str = 10;
     BR = 0; BLR = 1; BC = 2; BL = 3;
-    MI = 0; PL = 8; EQ = 1; NE = 9; LT = 5; GE = 13; LE = 6; GT = 14;
+    MI = 0; EQ = 1; NE = 9; LT = 5; GE = 13; LE = 6; GT = 14;
 
     TYPE Item* = RECORD
       mode*: INTEGER;
@@ -691,7 +691,7 @@ MODULE ORG; (* N.Wirth, 16.4.2016 / 4.4.2017 / 17.9.2018  Oberon compiler; code 
 
   (*For Statements*)
 
-  PROCEDURE For0*(VAR x, y: Item);
+  PROCEDURE For0*(VAR y: Item);
   BEGIN load(y)
   END For0;
 
@@ -708,7 +708,7 @@ MODULE ORG; (* N.Wirth, 16.4.2016 / 4.4.2017 / 17.9.2018  Oberon compiler; code 
     Store(x, y)
   END For1;
 
-  PROCEDURE For2*(VAR x, y, w: Item);
+  PROCEDURE For2*(VAR x, w: Item);
   BEGIN load(x); DEC(RH); Put1a(Add, x.r, x.r, w.a)
   END For2;
 

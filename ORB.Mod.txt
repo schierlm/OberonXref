@@ -8,7 +8,7 @@ MODULE ORB;   (*NW 25.6.2014  / 1.3.2019  in Oberon-07*)
     the symbol table (universe), and that of the pseudo-module SYSTEM are initialized. *)
 
   CONST versionkey* = 1; maxTypTab = 64;
-    (* class values*) Head* = 0;
+    (* class values*) Head = 0;
       Const* = 1; Var* = 2; Par* = 3; Fld* = 4; Typ* = 5;
       SProc* = 6; SFunc* = 7; Mod* = 8;
 
@@ -21,7 +21,7 @@ MODULE ORB;   (*NW 25.6.2014  / 1.3.2019  in Oberon-07*)
     Module* = POINTER TO ModDesc;
     Type* = POINTER TO TypeDesc;
 
-    ObjDesc*= RECORD
+    ObjDesc* = RECORD
       class*, exno*: BYTE;
       expo*, rdo*: BOOLEAN;   (*exported / read-only*)
       lev*: INTEGER;
@@ -34,7 +34,7 @@ MODULE ORB;   (*NW 25.6.2014  / 1.3.2019  in Oberon-07*)
     ModDesc* = RECORD (ObjDesc) orgname*: ORS.Ident END ;
 
     TypeDesc* = RECORD
-      form*, ref*, mno*: INTEGER;  (*ref is only used for import/export*)
+      form*, ref, mno*: INTEGER;  (*ref is only used for import/export*)
       nofpar*: INTEGER;  (*for procedures, extension level for records*)
       len*: LONGINT;  (*for arrays, len < 0 => open array; for records: adr of descriptor*)
       dsc*, typobj*: Object;

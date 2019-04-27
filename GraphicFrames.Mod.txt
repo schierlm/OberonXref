@@ -18,10 +18,10 @@ MODULE GraphicFrames; (*NW 18.4.88 / 18.11.2013 / 27.8.2018*)
 
     FrameDesc* = RECORD (Display.FrameDesc)
         graph*: Graphics.Graph;
-        Xg*, Yg*: INTEGER;  (*pos rel to graph origin*)
+        Xg, Yg: INTEGER;  (*pos rel to graph origin*)
         X1*, Y1*: INTEGER;  (*right and upper margins*)
         x*, y*, col*: INTEGER;  (*x = X + Xg, y = Y + Yg*)
-        marked*, ticked*: BOOLEAN;
+        marked, ticked*: BOOLEAN;
         mark*: LocDesc
       END ;
 
@@ -60,16 +60,16 @@ MODULE GraphicFrames; (*NW 18.4.88 / 18.11.2013 / 27.8.2018*)
         graph: Graphics.Graph
       END ;
 
-  VAR Crosshair*: Oberon.Marker;
-    tack*, dotted*, dotted1*: INTEGER;  (*patterns*)
+  VAR Crosshair: Oberon.Marker;
+    tack*, dotted: INTEGER;  (*patterns*)
     newcap: Graphics.Caption;
     TBuf: Texts.Buffer;
     DW, DH, CL: INTEGER;
     W: Texts.Writer;
 
   (*Exported procedures:
-    Restore, Focus, Selected, This, Draw, DrawNorm, Erase,
-    DrawObj, EraseObj, Change, Defocus, Deselect, Macro, Open*)
+    Restore, Focus, Selected, Draw, DrawNorm, Erase,
+    DrawObj, Change, Defocus, Deselect, Macro, Open*)
 
   PROCEDURE SetChangeMark(F: Frame; col: INTEGER); (*set mark in corner of frame*)
   BEGIN
@@ -118,7 +118,7 @@ MODULE GraphicFrames; (*NW 18.4.88 / 18.11.2013 / 27.8.2018*)
   BEGIN SQ.f := NIL; SQ.time := 0; Viewers.Broadcast(SQ); RETURN SQ.f
   END Selected;
 
-  PROCEDURE This*(x, y: INTEGER): Frame;
+  PROCEDURE This(x, y: INTEGER): Frame;
     VAR PQ: PosQuery;
   BEGIN PQ.f := NIL; PQ.x := x; PQ.y := y; Viewers.Broadcast(PQ); RETURN PQ.f
   END This;
@@ -147,11 +147,6 @@ MODULE GraphicFrames; (*NW 18.4.88 / 18.11.2013 / 27.8.2018*)
     VAR UM: UpdateMsg;
   BEGIN UM.id := drawobj; UM.graph := F.graph; UM.obj := obj; Viewers.Broadcast(UM)
   END DrawObj;
-
-  PROCEDURE EraseObj*(F: Frame; obj: Graphics.Object);
-    VAR UM: UpdateMsg;
-  BEGIN UM.id := drawobjd; UM.graph := F.graph; UM.obj := obj; Viewers.Broadcast(UM)
-  END EraseObj;
 
   PROCEDURE Change*(F: Frame; VAR msg: Graphics.Msg);
   BEGIN
@@ -362,7 +357,7 @@ MODULE GraphicFrames; (*NW 18.4.88 / 18.11.2013 / 27.8.2018*)
     END
   END GetSelection;
 
-  PROCEDURE Handle*(G: Display.Frame; VAR M: Display.FrameMsg);
+  PROCEDURE Handle(G: Display.Frame; VAR M: Display.FrameMsg);
     VAR x, y, h: INTEGER;
       DM: DispMsg; dM: DrawMsg;
       G1: Frame;
@@ -435,7 +430,7 @@ MODULE GraphicFrames; (*NW 18.4.88 / 18.11.2013 / 27.8.2018*)
     Display.ReplConst(col, x, y, w, h, mode)
   END ReplConst;
 
-  PROCEDURE ReplPattern*(F: Frame; col, patadr, x, y, w, h, mode: INTEGER);
+  PROCEDURE ReplPattern(F: Frame; col, patadr, x, y, w, h, mode: INTEGER);
   BEGIN
     IF x < F.X THEN DEC(w, F.X-x); x := F.X END ;
     IF x+w >= F.X1 THEN w := F.X1 - x END ;
@@ -523,7 +518,6 @@ BEGIN DW := Display.Width - 8; DH := Display.Height - 8; CL := 0;
   Texts.OpenWriter(W);
   tack := SYSTEM.ADR($0707 4122 1408 1422 4100$);
   dotted := SYSTEM.ADR($2004 0000 1111 1111 0000 0000 0000 0000 0000 0000$);
-  dotted1 := SYSTEM.ADR($2004 0000 1111 1111 0000 0000 4444 4444 0000 0000$);
   Crosshair.Fade := FlipCross; Crosshair.Draw := FlipCross;
   Graphics.InstallDrawMethods(DrawLine, DrawCaption, DrawMacro)
 END GraphicFrames.

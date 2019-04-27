@@ -11,8 +11,8 @@ MODULE Viewers; (*JG 14.9.90 / NW 15.9.2013*)
 
     ViewerMsg* = RECORD (Display.FrameMsg)
         id*: INTEGER;
-        X*, Y*, W*, H*: INTEGER;
-        state*: INTEGER
+        Y*, H*: INTEGER;
+        state: INTEGER
       END;
 
     Track = POINTER TO TrackDesc;

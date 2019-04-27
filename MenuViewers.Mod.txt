@@ -6,7 +6,7 @@ MODULE MenuViewers; (*JG 26.8.90 / 16.9.93 / NW 10.3.2013*)
   TYPE Viewer* = POINTER TO ViewerDesc;
 
     ViewerDesc* = RECORD (Viewers.ViewerDesc)
-      menuH*: INTEGER
+      menuH: INTEGER
     END;
 
     ModifyMsg* = RECORD (Display.FrameMsg)
@@ -165,7 +165,7 @@ MODULE MenuViewers; (*JG 26.8.90 / 16.9.93 / NW 10.3.2013*)
     Adjust(Menu, reduce, 0, V.Y + V.H - 1, 0)
   END Suspend;
 
-  PROCEDURE Handle* (V: Display.Frame; VAR M: Display.FrameMsg);
+  PROCEDURE Handle (V: Display.Frame; VAR M: Display.FrameMsg);
     VAR X, Y: INTEGER;
       Menu, Main: Display.Frame; V1: Viewer;
   BEGIN Menu := V.dsc; Main := V.dsc.next;

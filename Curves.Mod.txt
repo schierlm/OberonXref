@@ -2,15 +2,15 @@ MODULE Curves;  (*NW 8.11.90 / 18.4.2013*)
   IMPORT Display, Files, Oberon, Graphics, GraphicFrames;
 
   TYPE
-    Curve* = POINTER TO CurveDesc;
+    Curve = POINTER TO CurveDesc;
 
-    CurveDesc* = RECORD (Graphics.ObjectDesc)
-        kind*, lw*: INTEGER
+    CurveDesc = RECORD (Graphics.ObjectDesc)
+        kind, lw: INTEGER
       END ;
 
   (*kind: 0 = up-line, 1 = down-line, 2 = circle, 3 = ellipse*)
 
-  VAR method*: Graphics.Method;
+  VAR method: Graphics.Method;
 
   PROCEDURE Dot(f: GraphicFrames.Frame; col, x, y: INTEGER);
   BEGIN

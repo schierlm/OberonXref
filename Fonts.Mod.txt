@@ -6,7 +6,7 @@ MODULE Fonts; (*JG 18.11.90; PDR 8.6.12; NW 18.1.2019*)
   TYPE Font* = POINTER TO FontDesc;
     FontDesc* = RECORD
       name*: ARRAY 32 OF CHAR;
-      height*, minX*, maxX*, minY*, maxY*: INTEGER;
+      height*, minY*, maxY*: INTEGER;
       next*: Font;
       T: ARRAY 128 OF INTEGER;
       raster: ARRAY 2360 OF BYTE
@@ -73,7 +73,7 @@ BEGIN F := root;
         END;
         IF NofBytes < 2300 THEN NEW(F) ELSE NEW(LF); F := LF END ;
         F.name := name;
-        F.height := height; F.minX := minX; F.maxX := maxX; F.maxY := maxY;
+        F.height := height; F.maxY := maxY;
         IF minY >= 80H THEN F.minY := minY - 100H ELSE F.minY := minY END ;
         a0 := SYSTEM.ADR(F.raster);
         SYSTEM.PUT(a0, 0X); SYSTEM.PUT(a0+1, 0X); SYSTEM.PUT(a0+2, 0X); SYSTEM.PUT(a0+3, 0X); SYSTEM.PUT(a0+4, 0X);

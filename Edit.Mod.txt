@@ -1,7 +1,7 @@
 MODULE Edit; (*JG 2.11.90 / NW 28.11.2015*)
   IMPORT Files, Fonts, Texts, Display, Viewers, Oberon, MenuViewers, TextFrames;
 
-  CONST CR = 0DX; maxlen = 32;
+  CONST maxlen = 32;
     StandardMenu = "System.Close System.Copy System.Grow Edit.Search Edit.Store";
 
   VAR W: Texts.Writer;
@@ -75,14 +75,14 @@ MODULE Edit; (*JG 2.11.90 / NW 28.11.2015*)
       F: TextFrames.Frame;
       v: Viewers.Viewer;
       beg, end, time: LONGINT;
-      fnt: Fonts.Font; col, voff: INTEGER;
+      fnt: Fonts.Font; col: INTEGER;
   BEGIN Oberon.GetSelection(T, beg, end, time);
     IF time >= 0 THEN
       v := Oberon.FocusViewer;
       IF (v # NIL) & (v.dsc # NIL) & (v.dsc.next IS TextFrames.Frame) THEN
         F := v.dsc.next(TextFrames.Frame);
-        Texts.Attributes(F.text, F.carloc.pos, fnt, col, voff);
-        Texts.ChangeLooks(T, beg, end, {0,1,2}, fnt, col, voff)
+        Texts.Attributes(F.text, F.carloc.pos, fnt, col);
+        Texts.ChangeLooks(T, beg, end, {0,1,2}, fnt, col)
       END
     END
   END CopyLooks; 
@@ -94,7 +94,7 @@ MODULE Edit; (*JG 2.11.90 / NW 28.11.2015*)
     IF time >= 0 THEN
       Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
       IF S.class = Texts.Name THEN
-        Texts.ChangeLooks(T, beg, end, {0}, Fonts.This(S.s), 0, 0)
+        Texts.ChangeLooks(T, beg, end, {0}, Fonts.This(S.s), 0)
       END
     END
   END ChangeFont;
@@ -107,21 +107,9 @@ MODULE Edit; (*JG 2.11.90 / NW 28.11.2015*)
   BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
     IF S.class = Texts.Int THEN
       col := S.i; Oberon.GetSelection(T, beg, end, time);
-      IF time >= 0 THEN Texts.ChangeLooks(T, beg, end, {1}, NIL, col, 0) END
+      IF time >= 0 THEN Texts.ChangeLooks(T, beg, end, {1}, NIL, col) END
     END
   END ChangeColor;
-
-  PROCEDURE ChangeOffset*;
-    VAR S: Texts.Scanner;
-      T: Texts.Text;
-      voff: INTEGER; ch: CHAR;
-      beg, end, time: LONGINT;
-  BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
-    IF S.class = Texts.Int THEN
-      voff := S.i; Oberon.GetSelection(T, beg, end, time);
-      IF time >= 0 THEN Texts.ChangeLooks(T, beg, end, {2}, NIL, voff, 0) END
-    END
-  END ChangeOffset;
 
   PROCEDURE Search*;  (*uses global variables M, pat, d for Boyer-Moore search*)
     VAR Text: TextFrames.Frame;

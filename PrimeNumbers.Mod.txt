@@ -1,8 +1,7 @@
 MODULE PrimeNumbers;  (*NW 6.9.07; Tabulate prime numbers; for Oberon-07  NW 25.1.2013*)
   IMPORT Texts, Oberon;
   
-  VAR n: INTEGER;
-    W: Texts.Writer;
+  VAR W: Texts.Writer;
     p: ARRAY 400 OF INTEGER;
     v: ARRAY 20 OF INTEGER;
 
